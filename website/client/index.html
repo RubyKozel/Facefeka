@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style/index.css">
+    <title>Facefeka | Sign-up or Login now!</title>
+</head>
+<body id="index-body">
+<div id="login">
+    <h3 class="text-center text-white pt-5">Login to Facefeka!</h3>
+    <div class="container">
+        <div id="login-row" class="row justify-content-center align-items-center">
+            <div id="login-column" class="col-md-6">
+                <div id="login-box" class="col-md-12">
+                    <form id="login-form" class="form">
+                        <h3 class="text-center text-info">Login</h3>
+                        <label id="error-cred" class="invalid-text"></label>
+                        <div class="form-group">
+                            <label for="email" class="text-info">Email:</label><br>
+                            <input onclick="toggleError();" type="email" name="email" id="email"
+                                   class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="text-info">Password:</label><br>
+                            <input onclick="toggleError();" type="password" name="password" id="password"
+                                   class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="remember-me" class="text-info"><span>Remember me</span> <span><input
+                                    id="remember-me" name="remember-me" type="checkbox"></span></label><br>
+                            <input type="submit" name="submit" class="btn btn-info btn-md" value="Login">
+                            <a href="register.html" class="text-info" style="margin-left: 64.5%;">Register here</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    function toggleError() {
+        $('#error-cred').hide();
+        $('#login-box').css('height', '320px');
+    }
+</script>
+<script src="./js/bundles/index.bundle.js"></script>
+</html>

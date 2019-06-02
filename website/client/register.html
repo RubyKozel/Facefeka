@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style/index.css">
+    <title>Facefeka | Sign-up or Login now!</title>
+</head>
+<body>
+<div id="login">
+    <h3 class="text-center text-white pt-5">Register to Facefeka</h3>
+    <div class="container">
+        <div id="login-row" class="row justify-content-center align-items-center">
+            <div id="login-column" class="col-md-6">
+                <div id="register-box" class="col-md-12">
+                    <form id="register-form" class="form">
+                        <div class="form-group">
+                            <label for="firstname" class="text-info">First Name:</label><br>
+                            <input type="text" name="firstname" id="firstname" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname" class="text-info">Last Name:</label><br>
+                            <input type="text" name="lastname" id="lastname" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="text-info">Email:</label><br>
+                            <label id="error-email" class="invalid-text"></label>
+                            <input type="email" name="email" id="email" class="form-control"
+                                   onclick="toggleEmailError();"
+                                   required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="text-info">Password:</label><br>
+                            <label id="error-password" class="invalid-text"></label>
+                            <input type="password" name="password" id="password" class="form-control"
+                                   onchange="checkMatch();" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm" class="text-info">Confirm Password:</label><br>
+                            <input type="password" name="confirm" id="confirm" class="form-control"
+                                   onchange="checkMatch();" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="birthday" class="text-info">Birthday:</label><br>
+                            <input type="date" name="birthday" id="birthday" class="form-control" value="2019-05-31"
+                                   required>
+                        </div>
+                        <div class="form-group">
+                            <div id="register-link"
+                                 style="float:right;display:inline;width: 44%;margin-top: 10px;margin-left: 7px;">
+                                <a href="index.html" class="text-info">Already a member? Login now!</a>
+                            </div>
+                            <div>
+                                <input id="submit"
+                                       style="float:left;display:inline;width: 20%;margin-left: 10px;margin-top: 5px;"
+                                       type="submit" name="submit"
+                                       class="btn btn-info btn-md" value="Register">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    function checkMatch() {
+        const password = $('#password');
+        const confirm = $('#confirm');
+        const error_password = $('#error-password');
+
+        if (password.val() !== "" && confirm.val() !== "") {
+            if (password.val() !== confirm.val()) {
+                if (!password.hasClass('invalid')) password.addClass('invalid');
+                if (!confirm.hasClass('invalid')) confirm.addClass('invalid');
+                error_password.html('Passwords do not match');
+                error_password.show();
+                document.getElementById('submit').disabled = true;
+            } else {
+                if (password.hasClass('invalid')) password.removeClass('invalid');
+                if (confirm.hasClass('invalid')) confirm.removeClass('invalid');
+                document.getElementById('submit').disabled = false;
+                error_password.hide();
+            }
+        }
+    }
+
+    function toggleEmailError() {
+        const email = $('#email');
+        $('#error-email').hide();
+        if(email.hasClass('invalid'))
+            email.removeClass('invalid');
+    }
+</script>
+<script src="./js/bundles/register.bundle.js"></script>
+</html>

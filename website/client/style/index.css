@@ -1,0 +1,77 @@
+#index-body {
+    margin: 0;
+    padding: 0;
+    background-color: #17a2b8;
+    height: 100vh;
+}
+
+#login .container #login-row #login-column #login-box {
+    margin-top: 120px;
+    max-width: 600px;
+    height: 320px;
+    border: 1px solid #9C9C9C;
+    background-color: #EAEAEA;
+}
+
+#register-box {
+    padding-top: 30px;
+    margin-top: 40px;
+    max-width: 600px;
+    height: 630px;
+    border: 1px solid #9C9C9C;
+    background-color: #EAEAEA;
+}
+
+#login .container #login-row #login-column #login-box #login-form {
+    padding: 20px;
+}
+
+#login .container #login-row #login-column #login-box #login-form #register-form #register-link {
+    margin-top: -85px;
+}
+
+.invalid {
+    border-color: red;
+}
+
+.invalid-text {
+    color: #b81900 !important;
+}
+
+.box-error {
+    height: 360px;
+!important;
+}
+
+.text-area {
+    border: none;
+    overflow-y: hidden;
+    resize: none;
+    box-shadow: none;
+    border-bottom: 1px solid #ced4da;
+    background-color: transparent;
+    border-radius: 0;
+    margin: 0 0 .5rem 0;
+}
+
+.text-area:active {
+}
+
+.smallMarginTop {
+    margin-top: 20px;
+}
+
+.largeMarginLeft {
+    margin-left: 80px;
+}
+
+.extraSmallRightMargin {
+    margin-right: 10px;
+}
+
+.sticky {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 2 !important;
+}

@@ -1,0 +1,19 @@
+{
+  "base_url": "http://localhost:3000",
+  "routes": {
+    "sign_in": "/sign_in",
+    "sign_up": "/sign_up",
+    "sign_in_auth": "/sign_in_auth",
+    "remove_my_token": "/remove_my_token",
+    "get_users": "/get_users",
+    "get_user_by_id": "/user/:id",
+    "get_all_users": "/get_all_users",
+    "add_friend_by_id": "/add_friend/:id",
+    "remove_friend_by_id": "/remove_friend/:id",
+    "friend_list": "/friend_list",
+    "new_post": "/new_post",
+    "get_post_by_id": "/post/:id",
+    "delete_post_by_id": "/post/:id",
+    "get_all_posts_by_id": "/all_posts/:id"
+  }
+}
