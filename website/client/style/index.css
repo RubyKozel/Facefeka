@@ -58,7 +58,7 @@
 }
 
 .smallMarginTop {
-    margin-top: 20px;
+    margin-top: 1rem;
 }
 
 .largeMarginLeft {
@@ -74,4 +74,25 @@
     top: 0;
     width: 100%;
     z-index: 2 !important;
+}
+
+.customBody {
+    padding-left: 7.5rem;
+    padding-bottom: unset;
+}
+
+.customSubTitleMargin {
+    margin-top: 1.9rem;
+    margin-left: -1.5rem;
+}
+
+.post {
+    width: 40rem;
+    margin: 1rem 0 2rem 0;
+}
+
+.comment {
+    margin-left: 4%;
+    padding-bottom: 1rem;
+    padding-top: unset;
 }

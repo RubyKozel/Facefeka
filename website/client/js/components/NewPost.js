@@ -9,7 +9,7 @@ class NewPost extends Component {
 
     render() {
         return (
-            <Card className="smallMarginTop" style={{width: '40rem'}}>
+            <Card className="post">
                 <Card.Header> Write new post </Card.Header>
                 <Card.Body>
                     <MDBInput className="text-area" type="textarea" rows="5"/>
@@ -18,6 +18,9 @@ class NewPost extends Component {
                     <Row>
                         <Col>
                             <Button variant="outline-primary" size="md">Upload Images</Button>
+                        </Col>
+                        <Col>
+                            <Button variant="outline-primary" size="md">Publish</Button>
                         </Col>
                         <Col className="extraSmallRightMargin" sm="3">
                             <ButtonToolbar>
@@ -28,8 +31,6 @@ class NewPost extends Component {
                             </ButtonToolbar>
                         </Col>
                     </Row>
-
-
                 </Card.Footer>
             </Card>
         )

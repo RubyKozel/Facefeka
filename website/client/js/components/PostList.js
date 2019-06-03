@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import NewPost from './NewPost';
+import Post from "./Post";
 
 class PostList extends Component {
     constructor(props) {
@@ -9,26 +10,7 @@ class PostList extends Component {
     render() {
         return (
             <div>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
-                <NewPost/>
+                <Post/>
             </div>
         )
     }

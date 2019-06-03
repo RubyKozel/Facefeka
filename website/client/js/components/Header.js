@@ -30,9 +30,7 @@ class Header extends Component {
     componentDidMount() {
         $(window).on('scroll', () => {
             const navbar = $("#navbar");
-            console.log(navbar);
             const sticky = navbar.offset().top;
-            console.log(sticky);
             if (window.pageYOffset >= sticky) {
                 navbar.addClass("sticky")
             } else {

@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const _ = require('lodash');
 
 const {mongoose} = require('./db/mongoose.js');
+const {ObjectID} = require('mongodb');
 const {Post} = require('./components/post.js');
 const {User} = require('./components/user.js');
 const {authenticate, validate} = require('./middleware/authenticate');
@@ -73,11 +74,11 @@ app.delete(routes.remove_my_token, authenticate, async (req, res) => {
 });
 
 app.post(routes.get_users, authenticate, async (req, res) => {
-    await handleRequest(req, res, {message: "not ok"}, () => User.findByName(req.body.name));
+    await handleRequest(req.user, res, {message: "not ok"}, () => User.findByName(req.body.name));
 });
 
 app.get(routes.get_user_by_id, [authenticate, validate], async (req, res) => {
-    await handleRequest(req, res, {message: "Unable to find user"}, () => User.findOne({_id: req.params.id}));
+    await handleRequest(req.user, res, {message: "Unable to find user"}, () => User.findOne({_id: req.params.id}));
 });
 
 app.get(routes.get_all_users, async (req, res) => {
@@ -116,16 +117,17 @@ app.delete(routes.remove_friend_by_id, [authenticate, validate], async (req, res
 });
 
 app.get(routes.friend_list, authenticate, async (req, res) => {
-    await handleRequest(req, res, {message: "not ok"}, () => req.user.getAllFriends());
+    await handleRequest(req.user, res, {message: "not ok"}, () => req.user.getAllFriends());
 });
 
 /* ### Post Routes ### */
 
 app.post(routes.new_post, authenticate, async (req, res) => {
-    await handleRequest(req, res, {message: "failed to upload post"}, () => new Post({
+    await handleRequest(req.user, res, {message: "failed to upload post"}, () => new Post({
         text: req.body.text,
         pictures: req.body.pictures ? req.body.pictures : [],
         privacy: req.body.privacy,
+        is_comment: false,
         _creator: req.user._id
     }).save());
 });
@@ -144,18 +146,42 @@ app.delete(routes.delete_post_by_id, [authenticate, validate], async (req, res) 
 });
 
 app.get(routes.get_post_by_id, [authenticate, validate], async (req, res) => {
-    await handleRequest(req, res, {message: "failed to get post"}, () => Post.findOne({_id: req.params.id}));
+    await handleRequest(req.user, res, {message: "failed to get post"}, () => Post.findOne({_id: req.params.id}));
 });
 
 app.get(routes.get_all_posts_by_id, [authenticate, validate], async (req, res) => {
-    await handleRequest(req, res, {message: "failed to get posts"}, () => Post.find({_creator: req.params.id}));
+    await handleRequest(req.user, res, {message: "failed to get posts"}, () => Post.find({_creator: req.params.id}));
 });
 
-const handleRequest = async (req, res, error, callback) => {
+app.post(routes.comment_post_by_id, [authenticate, validate], async (req, res) => {
+    const newPost = new Post({
+        text: req.body.text,
+        pictures: req.body.pictures ? req.body.pictures : [],
+        privacy: false,
+        is_comment: true,
+        _creator: req.user._id
+    });
+
+    await newPost.save();
+
+    let post = await Post.findOne({_id: req.params.id});
+    await handleRequest(post, res, {message: "Couldn't find post"}, () => post.addComment(newPost._id));
+});
+
+app.post(routes.like_post_by_id, [authenticate, validate], async (req, res) => {
+    const post = await Post.findOne({_id: req.params.id});
+    await handleRequest(post, res, {message: "Couldn't find post"}, () => post.addLike(req.body.amount));
+});
+
+const handleRequest = async (element, res, error, callback) => {
     try {
-        if (req.user) {
+        if (element) {
             const retValue = await callback();
-            res.status(200).send(retValue);
+            if (retValue != null) {
+                res.status(200).send(retValue);
+            } else {
+                res.status(400).send(error);
+            }
         } else {
             res.status(400).send(error);
         }
