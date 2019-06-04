@@ -13,6 +13,7 @@ class CommentList extends Component {
         super(props);
         this.profilePic = props.profilePic;
         this.comments = props.comments;
+        this.id = props.id;
         this.state = {
             jsxComments: []
         };
@@ -30,6 +31,27 @@ class CommentList extends Component {
         this.getCommentsForPost()
             .then(jsxComments => this.setState({jsxComments}))
             .catch(() => console.log("couldn't get comments"));
+    }
+
+    async fetchPostAndUpdateCommentList() {
+        let response = await fetch(`${base_url}${routes.get_post_by_id}`.replace(':id', this.id), {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth': localStorage.getItem('x-auth')
+            }
+        });
+
+        let post = null;
+
+        if (response.status && response.status === 200) {
+            post = await response.json();
+        } else {
+            return Promise.reject();
+        }
+        console.log(post.comments);
+        this.comments = post.comments;
     }
 
     async getCommentsForPost() {
@@ -83,9 +105,15 @@ class CommentList extends Component {
     }
 
     render() {
+        console.log("rerendering...");
         return (
             <>
-                <NewComment profilePic={this.profilePic}/>
+                <NewComment id={this.id}
+                            onNewComment={() =>
+                                this.fetchPostAndUpdateCommentList()
+                                    .then(this.getCommentsForPost.bind(this))
+                                    .then((jsxComments) => this.setState({jsxComments}))}
+                            profilePic={this.profilePic}/>
                 {this.state.jsxComments}
             </>
         )

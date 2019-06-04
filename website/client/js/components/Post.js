@@ -14,7 +14,8 @@ class Post extends Component {
                 <>
                     <NavDropdown.Divider/>
                     <Card.Body>
-                        <CommentList profilePic={that.data.userProfilePic} comments={that.data.comments}/>
+                        <CommentList id={that.data._id}
+                                     profilePic={that.data.userProfilePic} comments={that.data.comments}/>
                     </Card.Body>
                 </>
             )
@@ -52,7 +53,6 @@ class Post extends Component {
             }
             return <></>;
         };
-
 
         return (
             <Card className="post" style={{width: '40rem'}}>
