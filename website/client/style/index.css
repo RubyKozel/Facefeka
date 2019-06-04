@@ -45,16 +45,15 @@
 
 .text-area {
     border: none;
-    overflow-y: hidden;
     resize: none;
-    box-shadow: none;
     border-bottom: 1px solid #ced4da;
     background-color: transparent;
     border-radius: 0;
     margin: 0 0 .5rem 0;
 }
 
-.text-area:active {
+.text-area:focus {
+    box-shadow: none;
 }
 
 .smallMarginTop {
@@ -95,4 +94,44 @@
     margin-left: 4%;
     padding-bottom: 1rem;
     padding-top: unset;
+}
+
+.commentTimeMargin {
+    margin-left: 5rem;
+    margin-top: -1.5rem;
+    margin-bottom: 1.2rem;
+}
+
+.dropdown-divider {
+    height: 0.25rem;
+}
+
+.fa-2x {
+    transition: font-size 0.25s ease-in-out, color 0.25s ease-in-out;
+}
+
+.fa-2x:hover {
+    font-size: 2.25rem;
+    color: royalblue;
+}
+
+.profileNameAndDateMargin {
+    margin-right: 20px;
+}
+
+.profileNameMargin {
+    margin-bottom: 0.25rem;
+}
+
+.postText {
+    margin-left: 0.4rem;
+}
+
+.uploadImageIconComment {
+    margin-top: -6px;
+    transition: color 0.25s ease-in-out;
+}
+
+.uploadImageIconComment:hover {
+    color: royalblue;
 }

@@ -37,7 +37,7 @@ const UserSchema = new mongoose.Schema({
     },
     profile_pic: {
         type: String,
-        default: ""
+        default: "../../resources/nopic.png"
     },
     connected: {
         type: Boolean,
@@ -66,7 +66,7 @@ UserSchema.methods.generateAuthToken = function () {
 };
 
 UserSchema.methods.toJSON = function () {
-    return _.pick(this.toObject(), ['_id', 'email', 'name', 'birthday', 'connected']);
+    return _.pick(this.toObject(), ['_id', 'email', 'name', 'birthday', 'connected', 'friendList', 'profile_pic']);
 };
 
 UserSchema.methods.removeToken = function (token) {
@@ -91,6 +91,7 @@ UserSchema.statics.findByToken = function (token) {
 
 UserSchema.statics.findByCredentials = async function (email, password) {
     const user = await User.findOne({email});
+    console.log(user);
     return !user ? Promise.reject() : new Promise((res, rej) => {
         bcrypt.compare(password, user.password, (err, succ) => succ ? res(user) : rej());
     })

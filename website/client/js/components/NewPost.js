@@ -2,9 +2,39 @@ import React, {Component} from 'react';
 import {Button, ButtonToolbar, Card, Row, ToggleButton, ToggleButtonGroup, Col} from "react-bootstrap";
 import {MDBInput} from "mdbreact";
 
+import properties from "../../../websiteUtils/properties.json";
+
+const {base_url, routes} = properties;
+
+import '@babel/polyfill';
+
 class NewPost extends Component {
     constructor(props) {
         super(props);
+        this.onNewPost = props.onNewPost;
+        this.state = {
+            text: "",
+            privacy: false
+        }
+    }
+
+    async publishNewPost() {
+        const data = this.state;
+        const response = await fetch(`${base_url}${routes.new_post}`, {
+            method: 'POST',
+            mode: 'cors',
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth': localStorage.getItem('x-auth')
+            }
+        });
+
+        if (response.status && response.status === 200) {
+            this.onNewPost();
+        } else {
+            console.log("Unable to post the new post");
+        }
     }
 
     render() {
@@ -12,19 +42,27 @@ class NewPost extends Component {
             <Card className="post">
                 <Card.Header> Write new post </Card.Header>
                 <Card.Body>
-                    <MDBInput className="text-area" type="textarea" rows="5"/>
+                    <MDBInput getValue={(text) => this.setState({text})} id="new-post" className="text-area"
+                              type="textarea" rows="5"/>
                 </Card.Body>
                 <Card.Footer>
                     <Row>
-                        <Col>
-                            <Button variant="outline-primary" size="md">Upload Images</Button>
+                        <Col md="3">
+                            <Button style={{padding: "6px"}} variant="outline-primary" size="md">Upload Images</Button>
                         </Col>
-                        <Col>
-                            <Button variant="outline-primary" size="md">Publish</Button>
+                        <Col md="5">
+                            <Button style={{margin: "0 45px 0 0"}} onClick={this.publishNewPost.bind(this)}
+                                    variant="outline-primary"
+                                    size="md">Publish</Button>
                         </Col>
                         <Col className="extraSmallRightMargin" sm="3">
                             <ButtonToolbar>
-                                <ToggleButtonGroup type="radio" name="options" defaultValue={1}>
+                                <ToggleButtonGroup style={{margin: "0 0 0 2.5rem"}}
+                                                   onChange={value => {
+                                                       this.setState({privacy: value === 2});
+                                                   }} type="radio"
+                                                   name="options"
+                                                   defaultValue={1}>
                                     <ToggleButton value={1}>Public</ToggleButton>
                                     <ToggleButton value={2}>Private</ToggleButton>
                                 </ToggleButtonGroup>

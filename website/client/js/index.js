@@ -62,7 +62,6 @@ $(document).ready(() => {
                 'x-auth': localStorage.getItem('x-auth')
             },
             success: () => {
-                console.log("got here");
                 localStorage.removeItem('remember');
                 localStorage.removeItem('x-auth');
             },

@@ -6,7 +6,8 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
-
+const formData = require('express-form-data');
+const cloudinary = require('cloudinary');
 const {mongoose} = require('./db/mongoose.js');
 const {ObjectID} = require('mongodb');
 const {Post} = require('./components/post.js');
@@ -18,6 +19,13 @@ const clientPath = path.join(__dirname, '../client');
 
 app.use(express.static(clientPath));
 app.use(bodyParser.json());
+app.use(formData.parse());
+
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
+});
 
 
 /*########## RESTFUL API ########### */
@@ -120,6 +128,20 @@ app.get(routes.friend_list, authenticate, async (req, res) => {
     await handleRequest(req.user, res, {message: "not ok"}, () => req.user.getAllFriends());
 });
 
+app.post(routes.upload_profile_pic, authenticate, async (req, res) => {
+    const values = Object.values(req.files);
+    cloudinary.uploader
+        .upload(values[0].path)
+        .then((image) =>
+            User.findOneAndUpdate(
+                {_id: req.user._id},
+                {$set: {profile_pic: image.secure_url}},
+                {new: true})
+        )
+        .then(user => res.status(200).send({picture: user.profile_pic}))
+        .catch(e => console.log(e));
+});
+
 /* ### Post Routes ### */
 
 app.post(routes.new_post, authenticate, async (req, res) => {
@@ -150,7 +172,7 @@ app.get(routes.get_post_by_id, [authenticate, validate], async (req, res) => {
 });
 
 app.get(routes.get_all_posts_by_id, [authenticate, validate], async (req, res) => {
-    await handleRequest(req.user, res, {message: "failed to get posts"}, () => Post.find({_creator: req.params.id}));
+    await handleRequest(req.user, res, {message: "failed to get posts"}, () => Post.find({_creator: req.params.id}), true);
 });
 
 app.post(routes.comment_post_by_id, [authenticate, validate], async (req, res) => {
@@ -173,12 +195,15 @@ app.post(routes.like_post_by_id, [authenticate, validate], async (req, res) => {
     await handleRequest(post, res, {message: "Couldn't find post"}, () => post.addLike(req.body.amount));
 });
 
-const handleRequest = async (element, res, error, callback) => {
+const handleRequest = async (element, res, error, callback, sorted = false) => {
     try {
         if (element) {
             const retValue = await callback();
             if (retValue != null) {
-                res.status(200).send(retValue);
+                if (sorted)
+                    res.status(200).send(retValue.sort((a, b) => b.date - a.date));
+                else
+                    res.status(200).send(retValue);
             } else {
                 res.status(400).send(error);
             }

@@ -16,6 +16,7 @@
     "delete_post_by_id": "/post/:id",
     "get_all_posts_by_id": "/all_posts/:id",
     "comment_post_by_id": "/comment/:id",
-    "like_post_by_id": "/like/:id"
+    "like_post_by_id": "/like/:id",
+    "upload_profile_pic": "/upload_profile_pic"
   }
 }
