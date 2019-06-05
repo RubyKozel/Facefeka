@@ -191,6 +191,18 @@ app.post(routes.comment_post_by_id, validate, async (req, res) => {
 });
 
 app.post(routes.like_post_by_id, [authenticate, validate], async (req, res) => {
+    await handleRequest(true, res, {message: "Couldn't like post"}, () => {
+        if (req.body.like) {
+            return Post.findOneAndUpdate(
+                {_id: req.params._id},
+                {$push: {likes: req.body._id}},
+                {new: true});
+        }
+        return Post.findOneAndUpdate(
+            {_id: req.params._id},
+            {$pull: {likes: req.body._id}},
+            {new: true});
+    });
     const post = await Post.findOne({_id: req.params.id});
     await handleRequest(post, res, {message: "Couldn't find post"}, () => post.addLike(req.body.amount));
 });
