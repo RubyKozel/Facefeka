@@ -81,12 +81,12 @@ app.delete(routes.remove_my_token, authenticate, async (req, res) => {
     }
 });
 
-app.post(routes.get_users, authenticate, async (req, res) => {
-    await handleRequest(req.user, res, {message: "not ok"}, () => User.findByName(req.body.name));
+app.post(routes.get_users, async (req, res) => {
+    await handleRequest(true, res, {message: "not ok"}, () => User.findByName(req.body.name));
 });
 
-app.get(routes.get_user_by_id, [authenticate, validate], async (req, res) => {
-    await handleRequest(req.user, res, {message: "Unable to find user"}, () => User.findOne({_id: req.params.id}));
+app.get(routes.get_user_by_id, validate, async (req, res) => {
+    await handleRequest(true, res, {message: "Unable to find user"}, () => User.findOne({_id: req.params.id}));
 });
 
 app.get(routes.get_all_users, async (req, res) => {
@@ -130,7 +130,8 @@ app.get(routes.friend_list, authenticate, async (req, res) => {
 
 app.post(routes.upload_profile_pic, authenticate, async (req, res) => {
     const values = Object.values(req.files);
-    cloudinary.uploader
+    cloudinary
+        .uploader
         .upload(values[0].path)
         .then((image) =>
             User.findOneAndUpdate(
@@ -144,13 +145,12 @@ app.post(routes.upload_profile_pic, authenticate, async (req, res) => {
 
 /* ### Post Routes ### */
 
-app.post(routes.new_post, authenticate, async (req, res) => {
-    await handleRequest(req.user, res, {message: "failed to upload post"}, () => new Post({
-        text: req.body.text,
-        pictures: req.body.pictures ? req.body.pictures : [],
-        privacy: req.body.privacy,
-        is_comment: false,
-        _creator: req.user._id
+app.post(routes.new_post, async (req, res) => {
+    const {text, pictures, privacy, _creator, name, profile_pic} = req.body;
+    await handleRequest(true, res, {message: "failed to upload post"}, () => new Post({
+        text, privacy, _creator, name, profile_pic,
+        pictures: pictures ? pictures : [],
+        is_comment: false
     }).save());
 });
 
@@ -167,21 +167,21 @@ app.delete(routes.delete_post_by_id, [authenticate, validate], async (req, res) 
     }
 });
 
-app.get(routes.get_post_by_id, [authenticate, validate], async (req, res) => {
-    await handleRequest(req.user, res, {message: "failed to get post"}, () => Post.findOne({_id: req.params.id}));
+app.get(routes.get_post_by_id, validate, async (req, res) => {
+    await handleRequest(true, res, {message: "failed to get post"}, () => Post.findOne({_id: req.params.id}));
 });
 
-app.get(routes.get_all_posts_by_id, [authenticate, validate], async (req, res) => {
-    await handleRequest(req.user, res, {message: "failed to get posts"}, () => Post.find({_creator: req.params.id}), true);
+app.get(routes.get_all_posts_by_id, validate, async (req, res) => {
+    await handleRequest(true, res, {message: "failed to get posts"}, () => Post.find({_creator: req.params.id}), true);
 });
 
-app.post(routes.comment_post_by_id, [authenticate, validate], async (req, res) => {
+app.post(routes.comment_post_by_id, validate, async (req, res) => {
+    const {text, pictures, privacy, _creator, name, profile_pic} = req.body;
     const newPost = new Post({
-        text: req.body.text,
-        pictures: req.body.pictures ? req.body.pictures : [],
-        privacy: false,
-        is_comment: true,
-        _creator: req.user._id
+        text, privacy, _creator, name, profile_pic,
+        pictures: pictures ? pictures : [],
+        is_comment: true
+
     });
 
     await newPost.save();

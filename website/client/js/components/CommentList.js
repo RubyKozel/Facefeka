@@ -14,13 +14,13 @@ class CommentList extends Component {
         this.profilePic = props.profilePic;
         this.comments = props.comments;
         this.id = props.id;
+        this.name = props.name;
+        this._creator = props.creator;
         this.state = {
             jsxComments: []
         };
 
-        this.getCommentsForPost()
-            .then(jsxComments => this.setState({jsxComments}))
-            .catch(() => console.log("couldn't get comments"));
+        this.getCommentsForPost().catch(() => console.log("couldn't get comments"));
 
     }
 
@@ -28,9 +28,7 @@ class CommentList extends Component {
         this.profilePic = nextProps.profilePic;
         this.comments = nextProps.comments;
 
-        this.getCommentsForPost()
-            .then(jsxComments => this.setState({jsxComments}))
-            .catch(() => console.log("couldn't get comments"));
+        this.getCommentsForPost().catch(() => console.log("couldn't get comments"));
     }
 
     async fetchPostAndUpdateCommentList() {
@@ -50,7 +48,7 @@ class CommentList extends Component {
         } else {
             return Promise.reject();
         }
-        console.log(post.comments);
+
         this.comments = post.comments;
     }
 
@@ -74,26 +72,9 @@ class CommentList extends Component {
                 return Promise.reject();
             }
 
-            response = await fetch(`${base_url}${routes.get_user_by_id}`.replace(':id', comment._creator), {
-                method: 'GET',
-                mode: 'cors',
-                headers: {
-                    "Content-Type": "application/json",
-                    'x-auth': localStorage.getItem('x-auth')
-                }
-            });
-
-            let user = null;
-
-            if (response.status && response.status === 200) {
-                user = await response.json();
-            } else {
-                return Promise.reject();
-            }
-
             const data = {
-                userName: user.name,
-                profilePic: user.profile_pic,
+                userName: comment.name,
+                profilePic: comment.profile_pic,
                 text: comment.text,
                 date: comment.date
             };
@@ -101,19 +82,21 @@ class CommentList extends Component {
             jsxComments.push(<Comment data={data}/>);
         }
 
-        return jsxComments;
+        this.setState({jsxComments});
     }
 
     render() {
-        console.log("rerendering...");
         return (
             <>
-                <NewComment id={this.id}
-                            onNewComment={() =>
-                                this.fetchPostAndUpdateCommentList()
-                                    .then(this.getCommentsForPost.bind(this))
-                                    .then((jsxComments) => this.setState({jsxComments}))}
-                            profilePic={this.profilePic}/>
+                <NewComment
+                    creator={this._creator}
+                    id={this.id}
+                    name={this.name}
+                    onNewComment={(callback) => {
+                        this.fetchPostAndUpdateCommentList().then(() => this.getCommentsForPost());
+                        callback();
+                    }}
+                    profilePic={this.profilePic}/>
                 {this.state.jsxComments}
             </>
         )

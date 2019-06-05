@@ -4,14 +4,13 @@ import NewPost from "./NewPost";
 import PostList from "./PostList";
 
 import properties from '../../../websiteUtils/properties.json';
-import {Row, Col} from "react-bootstrap";
+import {Col, Row} from "react-bootstrap";
 import ProfileCard from "./ProfileCard";
+import '@babel/polyfill';
 
 
 const base_url = properties.base_url;
 const routes = properties.routes;
-
-import '@babel/polyfill';
 
 class Home extends Component {
     constructor(props) {
@@ -21,9 +20,7 @@ class Home extends Component {
             postList: []
         };
 
-        this.getPostList()
-            .then(postList => this.setState({postList}))
-            .catch(() => console.log("couldn't get postList"));
+        this.getPostList().catch(e => console.log(e));
     }
 
     async getPostList() {
@@ -36,6 +33,7 @@ class Home extends Component {
                 'x-auth': localStorage.getItem('x-auth')
             }
         });
+
 
         let myposts = [];
 
@@ -68,9 +66,9 @@ class Home extends Component {
             friend_posts = friend_posts.concat(posts);
         }
 
-        myposts = myposts.concat(friend_posts);
+        const postList = myposts.concat(friend_posts);
 
-        return myposts;
+        this.setState({postList});
     }
 
     render() {
@@ -84,7 +82,13 @@ class Home extends Component {
                         </Col>
                         <Col sm="4">
                             <NewPost
-                                onNewPost={() => this.getPostList().then((postList) => this.setState({postList}))}/>
+                                name={this.user.name}
+                                profile_pic={this.user.profile_pic}
+                                creator={this.user._id}
+                                onNewPost={(callback) => {
+                                    this.getPostList().catch(e => console.log(e));
+                                    callback();
+                                }}/>
                             <PostList posts={this.state.postList}/>
                         </Col>
                     </Row>

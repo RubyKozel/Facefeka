@@ -34,6 +34,14 @@ const PostSchema = new mongoose.Schema({
     _creator: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    profile_pic: {
+        type: String,
+        default: "../../resources/nopic.png"
     }
 });
 

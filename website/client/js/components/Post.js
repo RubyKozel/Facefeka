@@ -6,16 +6,19 @@ import {MDBIcon} from 'mdbreact'
 class Post extends Component {
     constructor(props) {
         super(props);
-        this.data = props.data;
+        this.data = props.post;
         const that = this;
-
         const getComments = () => {
             return (
                 <>
                     <NavDropdown.Divider/>
                     <Card.Body>
-                        <CommentList id={that.data._id}
-                                     profilePic={that.data.userProfilePic} comments={that.data.comments}/>
+                        <CommentList
+                            creator={that.data._creator}
+                            id={that.data._id}
+                            name={that.data.name}
+                            profilePic={that.data.profile_pic}
+                            comments={that.data.comments}/>
                     </Card.Body>
                 </>
             )
@@ -59,10 +62,10 @@ class Post extends Component {
                 <Card.Body>
                     <Row>
                         <Col>
-                            <Image style={{width: '100%'}} src={this.data.userProfilePic} roundedCircle/>
+                            <Image style={{width: '100%'}} src={this.data.profile_pic} roundedCircle/>
                         </Col>
                         <Col className="profileNameAndDateMargin" md="10">
-                            <Card.Title className="profileNameMargin">{this.data.userName}</Card.Title>
+                            <Card.Title className="profileNameMargin">{this.data.name}</Card.Title>
                             {this.data.date}
                         </Col>
                     </Row>

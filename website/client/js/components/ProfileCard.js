@@ -68,7 +68,7 @@ class ProfileCard extends Component {
         return (
             <Card className="text-center smallMarginTop largeMarginLeft">
                 {content()}
-                <input id="image_upload" type="file" style={{visibility: "hidden"}} alt=""
+                <input id="image_upload" type="file" style={{display: "none"}} alt=""
                        onChange={(e) => this.uploadImage(e)}/>
                 <Card.Body>
                     <Card.Title>{this.name}</Card.Title>

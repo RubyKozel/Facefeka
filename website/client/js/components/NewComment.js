@@ -14,13 +14,18 @@ class NewComment extends Component {
         this.profilePic = props.profilePic;
         this.onNewComment = props.onNewComment;
         this.id = props.id;
+        this.name = props.name;
+        this.profile_pic = props.profilePic;
+        this.creator = props.creator;
         this.state = {text: ""};
     }
 
     async postNewComment(e) {
         if (e.key === 'Enter') {
             const data = this.state;
-
+            data._creator = this.creator;
+            data.name = this.name;
+            data.profile_pic = this.profile_pic;
             const response = await fetch(`${base_url}${routes.comment_post_by_id}`.replace(':id', this.id), {
                 method: 'POST',
                 mode: 'cors',
@@ -32,7 +37,9 @@ class NewComment extends Component {
             });
 
             if (response.status && response.status === 200) {
-                this.onNewComment();
+                this.onNewComment(() => {
+                    this.setState({text: ""});
+                });
             } else {
                 console.log("Unable to post the new post");
             }
@@ -47,9 +54,12 @@ class NewComment extends Component {
                         <Image style={{width: "100%"}} src={this.profilePic} roundedCircle/>
                     </Col>
                     <Col md="9">
-                        <MDBInput onKeyPress={this.postNewComment.bind(this)}
-                                  getValue={(text) => this.setState({text})} type="text"
-                                  placeholder="Write new comment..."/>
+                        <MDBInput
+                            value={this.state.text}
+                            className="comment_input"
+                            onKeyPress={this.postNewComment.bind(this)}
+                            getValue={(text) => this.setState({text})} type="text"
+                            placeholder="Write new comment..."/>
                     </Col>
                     <Col>
                         <MDBIcon className="uploadImageIconComment" far icon="image" size="3x"/>

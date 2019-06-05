@@ -12,6 +12,9 @@ class NewPost extends Component {
     constructor(props) {
         super(props);
         this.onNewPost = props.onNewPost;
+        this.name = props.name;
+        this.creator = props.creator;
+        this.profile_pic = props.profile_pic;
         this.state = {
             text: "",
             privacy: false
@@ -20,6 +23,10 @@ class NewPost extends Component {
 
     async publishNewPost() {
         const data = this.state;
+        data._creator = this.creator;
+        data.name = this.name;
+        data.profile_pic = this.profile_pic;
+        console.log(data);
         const response = await fetch(`${base_url}${routes.new_post}`, {
             method: 'POST',
             mode: 'cors',
@@ -31,18 +38,23 @@ class NewPost extends Component {
         });
 
         if (response.status && response.status === 200) {
-            this.onNewPost();
+            this.onNewPost(() => {
+                this.setState({text: ""});
+            });
+            this.setState({text: ""});
         } else {
             console.log("Unable to post the new post");
         }
     }
 
     render() {
+        console.log("rendering", this.state.text);
         return (
             <Card className="post">
                 <Card.Header> Write new post </Card.Header>
                 <Card.Body>
-                    <MDBInput getValue={(text) => this.setState({text})} id="new-post" className="text-area"
+                    <MDBInput value={this.state.text} getValue={(text) => this.setState({text})} id="new-post"
+                              className="text-area"
                               type="textarea" rows="5"/>
                 </Card.Body>
                 <Card.Footer>
@@ -58,9 +70,8 @@ class NewPost extends Component {
                         <Col className="extraSmallRightMargin" sm="3">
                             <ButtonToolbar>
                                 <ToggleButtonGroup style={{margin: "0 0 0 2.5rem"}}
-                                                   onChange={value => {
-                                                       this.setState({privacy: value === 2});
-                                                   }} type="radio"
+                                                   onChange={value => this.setState({privacy: value === 2})}
+                                                   type="radio"
                                                    name="options"
                                                    defaultValue={1}>
                                     <ToggleButton value={1}>Public</ToggleButton>
