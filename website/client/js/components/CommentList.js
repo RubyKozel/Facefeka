@@ -16,6 +16,7 @@ class CommentList extends Component {
         this.id = props.id;
         this.name = props.name;
         this._creator = props.creator;
+        this.onNewComment = props.onNewComment;
         this.state = {
             jsxComments: []
         };
@@ -81,8 +82,10 @@ class CommentList extends Component {
 
             jsxComments.push(<Comment data={data}/>);
         }
-
-        this.setState({jsxComments});
+        const that = this;
+        this.setState({jsxComments}, () => {
+            that.onNewComment(that.state.jsxComments.length);
+        });
     }
 
     render() {
@@ -95,6 +98,7 @@ class CommentList extends Component {
                     onNewComment={(callback) => {
                         this.fetchPostAndUpdateCommentList().then(() => this.getCommentsForPost());
                         callback();
+
                     }}
                     profilePic={this.profilePic}/>
                 {this.state.jsxComments}

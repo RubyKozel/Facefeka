@@ -10,15 +10,16 @@ import '@babel/polyfill';
 class PostList extends Component {
     constructor(props) {
         super(props);
-        this.state = {posts: PostList.createPosts(props)};
+        this.user_id = props.user_id;
+        this.state = {posts: this.createPosts(props)};
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({posts: PostList.createPosts(nextProps)});
+        this.setState({posts: this.createPosts(nextProps)});
     }
 
-    static createPosts(props) {
-        return props.posts.map(post => <Post key={post._id} post={post}/>);
+    createPosts(props) {
+        return props.posts.map(post => <Post key={post._id} user_id={this.user_id} post={post}/>);
     }
 
     render() {

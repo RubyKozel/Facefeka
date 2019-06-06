@@ -89,7 +89,7 @@ class Home extends Component {
                                     this.getPostList().catch(e => console.log(e));
                                     callback();
                                 }}/>
-                            <PostList posts={this.state.postList}/>
+                            <PostList user_id={this.user._id} posts={this.state.postList}/>
                         </Col>
                     </Row>
                 </div>

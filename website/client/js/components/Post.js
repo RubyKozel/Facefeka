@@ -3,10 +3,18 @@ import {Card, Col, Image, Row, NavDropdown} from "react-bootstrap";
 import CommentList from './CommentList'
 import {MDBIcon} from 'mdbreact'
 
+import properties from "../../../websiteUtils/properties.json";
+
+const base_url = properties.base_url;
+const routes = properties.routes;
+
+import '@babel/polyfill';
+
 class Post extends Component {
     constructor(props) {
         super(props);
         this.data = props.post;
+        this.user_id = props.user_id;
         const that = this;
         const getComments = () => {
             return (
@@ -14,6 +22,7 @@ class Post extends Component {
                     <NavDropdown.Divider/>
                     <Card.Body>
                         <CommentList
+                            onNewComment={(commentsLength) => this.setState({comments: commentsLength})}
                             creator={that.data._creator}
                             id={that.data._id}
                             name={that.data.name}
@@ -25,7 +34,9 @@ class Post extends Component {
         };
 
         this.state = {
-            comments: getComments(),
+            commentsJsx: getComments(),
+            comments: props.post.comments.length,
+            likes: props.post.likes,
             show_div: <></>,
             collapsed: false
         }
@@ -47,6 +58,40 @@ class Post extends Component {
         }
     }
 
+    async likePost() {
+        console.log(this.data);
+        const likeButton = $("#likeButton");
+        let like;
+        if (likeButton.hasClass('iconButtonClicked')) {
+            like = false;
+            likeButton.removeClass('iconButtonClicked');
+        } else {
+            like = true;
+            likeButton.addClass('iconButtonClicked');
+        }
+
+        const response = await fetch(routes.like_post_by_id.replace(':id', this.data._id), {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth': localStorage.getItem('x-auth')
+            },
+            body: JSON.stringify({like, _id: this.user_id})
+        });
+
+        let likes = null;
+        if (response.status && response.status === 200) {
+            likes = await response.json();
+        } else {
+            return Promise.reject();
+        }
+
+        console.log(likes);
+
+        return likes;
+    }
+
     render() {
         this.getFormatedDate();
         const pictures = () => {
@@ -56,6 +101,8 @@ class Post extends Component {
             }
             return <></>;
         };
+
+        const likeIconClass = () => this.data.likes.includes(this.user_id) ? "indigo-text pr-3 iconButtonClicked" : "indigo-text pr-3 iconButton";
 
         return (
             <Card className="post" style={{width: '40rem'}}>
@@ -77,18 +124,20 @@ class Post extends Component {
                 <Card.Body className="customBody">
                     <Row>
                         <Col sm="8">
-                            <p><MDBIcon far icon="thumbs-up" size="2x"
-                                        className="indigo-text pr-3"/>&nbsp;&nbsp;&nbsp;&nbsp;{this.data.likes}</p>
+                            <p><MDBIcon onClick={() => this.likePost().then((likes) => this.setState({likes}))}
+                                        id="likeButton" far icon="thumbs-up" size="2x"
+                                        className={likeIconClass()}/>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.likes.length}
+                            </p>
                         </Col>
                         <Col sm="4">
                             <p onClick={() => {
                                 const that = this;
                                 this.setState({
-                                    show_div: that.state.collapsed ? <></> : that.state.comments,
+                                    show_div: that.state.collapsed ? <></> : that.state.commentsJsx,
                                     collapsed: !that.state.collapsed
                                 })
                             }}><MDBIcon far icon="comment" size="2x"
-                                        className="indigo-text pr-3"/>&nbsp;&nbsp;&nbsp;&nbsp;{this.data.comments.length}
+                                        className="indigo-text pr-3 iconButton"/>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.comments}
                             </p>
                         </Col>
                     </Row>

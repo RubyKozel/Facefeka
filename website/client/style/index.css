@@ -106,11 +106,18 @@
     height: 0.25rem;
 }
 
-.fa-2x {
+.iconButton {
+    cursor: pointer;
     transition: font-size 0.25s ease-in-out, color 0.25s ease-in-out;
 }
 
-.fa-2x:hover {
+.iconButtonClicked {
+    cursor: pointer;
+    font-size: 2.25rem;
+    color: royalblue;
+}
+
+.iconButton:hover {
     font-size: 2.25rem;
     color: royalblue;
 }

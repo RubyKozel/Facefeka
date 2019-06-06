@@ -190,21 +190,19 @@ app.post(routes.comment_post_by_id, validate, async (req, res) => {
     await handleRequest(post, res, {message: "Couldn't find post"}, () => post.addComment(newPost._id));
 });
 
-app.post(routes.like_post_by_id, [authenticate, validate], async (req, res) => {
-    await handleRequest(true, res, {message: "Couldn't like post"}, () => {
-        if (req.body.like) {
-            return Post.findOneAndUpdate(
-                {_id: req.params._id},
-                {$push: {likes: req.body._id}},
-                {new: true});
+app.post(routes.like_post_by_id, validate, async (req, res) => {
+    const updateObject = req.body.like ? {$push: {likes: req.body._id}} : {$pull: {likes: req.body._id}};
+    try {
+        const post = await Post.findOneAndUpdate({_id: req.params.id}, updateObject, {new: true});
+        console.log(post);
+        if (post) {
+            res.status(200).send(post.likes);
+        } else {
+            res.status(400).send({message: "Couldn't update post"});
         }
-        return Post.findOneAndUpdate(
-            {_id: req.params._id},
-            {$pull: {likes: req.body._id}},
-            {new: true});
-    });
-    const post = await Post.findOne({_id: req.params.id});
-    await handleRequest(post, res, {message: "Couldn't find post"}, () => post.addLike(req.body.amount));
+    } catch (e) {
+        res.status(400).send({message: "Couldn't update post"});
+    }
 });
 
 const handleRequest = async (element, res, error, callback, sorted = false) => {
