@@ -39,8 +39,7 @@
 }
 
 .box-error {
-    height: 360px;
-!important;
+    height: 360px !important;
 }
 
 .text-area {
@@ -54,14 +53,6 @@
 
 .text-area:focus {
     box-shadow: none;
-}
-
-.smallMarginTop {
-    margin-top: 1rem;
-}
-
-.largeMarginLeft {
-    margin-left: 80px;
 }
 
 .extraSmallRightMargin {
@@ -80,8 +71,13 @@
     padding-bottom: unset;
 }
 
+.customFriendSearchSubtitle {
+    margin-top: 0.75rem;
+    margin-left: -12.5rem;
+}
+
 .customSubTitleMargin {
-    margin-top: 1.9rem;
+    margin-top: 1.3rem;
     margin-left: -1.5rem;
 }
 
@@ -98,7 +94,7 @@
 
 .commentTimeMargin {
     margin-left: 5rem;
-    margin-top: -1.5rem;
+    margin-top: -2.3rem;
     margin-bottom: 1.2rem;
 }
 
@@ -141,4 +137,78 @@
 
 .uploadImageIconComment:hover {
     color: royalblue;
+}
+
+.preview {
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+.customIconToggle {
+    padding: unset;
+    background-color: transparent;
+    color: black;
+    border: none;
+}
+
+.customIconToggle:after {
+    content: unset !important;
+}
+
+.show > .btn-primary.dropdown-toggle,
+.customIconToggle:hover,
+.customIconToggle:focus {
+    color: black !important;
+    background-color: unset !important;
+    border-color: unset !important;
+    box-shadow: unset !important;
+}
+
+.customHamburgerIcon {
+    position: absolute;
+    margin-left: 36rem;
+}
+
+.customLockIcon {
+    position: absolute;
+    margin-left: 33.5rem;
+    margin-top: 0.1rem;
+}
+
+.profileCustomImage {
+    cursor: pointer;
+    padding: 0.25rem;
+    border: 1px black solid;
+}
+
+.profileCustomCard {
+    width: 10%;
+    background-color: transparent;
+    border: none;
+    position: absolute;
+    margin-left: 27%;
+    margin-top: 6%;
+    z-index: 1;
+}
+
+.profileCustomTitle {
+    position: absolute;
+    margin-left: 5rem;
+    margin-top: 2rem;
+    width: 20rem;
+    color: white;
+    -webkit-text-stroke: .5px black;
+}
+
+.profileCustomContainer {
+    background-color: white;
+    padding-bottom: 8px;
+    margin-top: -30px;
+    padding-top: 3rem;
+}
+
+.profileCardMargin {
+    width: 140%;
+    margin-left: 5rem;
+    margin-top: 1rem;
 }

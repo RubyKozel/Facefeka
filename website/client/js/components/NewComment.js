@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import {Col, Container, Image, Row, Form} from "react-bootstrap";
+import {Col, Container, Image, Row, Form, Card, Spinner} from "react-bootstrap";
 import {MDBIcon, MDBInput} from 'mdbreact';
 
 import properties from "../../../websiteUtils/properties.json";
 
 const {base_url, routes} = properties;
 
-import '@babel/polyfill';
+import GeneralDialog from "./GeneralDialog";
 
 class NewComment extends Component {
     constructor(props) {
@@ -17,15 +17,24 @@ class NewComment extends Component {
         this.name = props.name;
         this.profile_pic = props.profilePic;
         this.creator = props.creator;
-        this.state = {text: ""};
+        this.state = {
+            text: "",
+            imagePreview: <></>,
+            pictures: [],
+            error: false,
+            publishing: false
+        };
     }
 
     async postNewComment(e) {
         if (e.key === 'Enter') {
-            const data = this.state;
-            data._creator = this.creator;
-            data.name = this.name;
-            data.profile_pic = this.profile_pic;
+            this.setState({publishing: true});
+            const data = {
+                _creator: this.creator,
+                name: this.name,
+                profile_pic: this.profile_pic,
+                text: this.state.text
+            };
             const response = await fetch(`${base_url}${routes.comment_post_by_id}`.replace(':id', this.id), {
                 method: 'POST',
                 mode: 'cors',
@@ -37,19 +46,66 @@ class NewComment extends Component {
             });
 
             if (response.status && response.status === 200) {
-                this.onNewComment(() => {
-                    this.setState({text: ""});
-                });
+                const post = await response.json();
+                if (this.state.pictures.length > 0) {
+                    const post_id = post._id;
+                    const formData = new FormData();
+                    this.state.pictures.forEach((file, i) => formData.append(`${i}`, file));
+
+                    const response = await fetch(`${base_url}${routes.upload_images_to_post_by_id}`.replace(':id', post_id), {
+                        method: 'POST',
+                        mode: 'cors',
+                        body: formData,
+                        headers: {
+                            'x-auth': localStorage.getItem('x-auth')
+                        }
+                    });
+
+                    if (!(response.status && response.status === 200)) {
+                        this.setState({error: true, publishing: false});
+                        return Promise.reject();
+                    }
+                }
+
+                this.onNewComment(() => this.setState({
+                    text: "",
+                    imagePreview: <></>,
+                    pictures: [],
+                    publishing: false
+                }));
             } else {
-                console.log("Unable to post the new post");
+                this.setState({error: true, publishing: false});
+                return Promise.reject();
             }
         }
     }
 
+    showImagePreview(e) {
+        const files = Array.from(e.target.files);
+        console.log(files.length);
+        let imagePreview = [];
+        for (const file of files) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                imagePreview.push(<Card.Img style={{width: '18%', height: '18%', margin: '1rem'}} tag="a"
+                                            variant="bottom" src={e.target.result}/>);
+                this.setState({imagePreview, pictures: files}, () => this.setState(this.state));
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
     render() {
+        const preview = () => this.state.imagePreview.length > 0 ?
+            <Row className="preview">{this.state.imagePreview}</Row> : <></>;
+        const error = () => this.state.error ?
+            <GeneralDialog title="Error!" text="Opps! there was an error in your last action..."
+                           onClose={() => this.setState({error: false})}/> : <></>;
+
         return (
             <Container>
-                <Row>
+                {error()}
+                <Row style={{'margin-bottom': '1rem'}}>
                     <Col>
                         <Image style={{width: "100%"}} src={this.profilePic} roundedCircle/>
                     </Col>
@@ -62,9 +118,14 @@ class NewComment extends Component {
                             placeholder="Write new comment..."/>
                     </Col>
                     <Col>
-                        <MDBIcon className="uploadImageIconComment" far icon="image" size="3x"/>
+                        <MDBIcon onClick={this.state.publishing ? null : () => $('#upload_images_comment').click()}
+                                 className="uploadImageIconComment"
+                                 far icon="image" size="3x"/>
+                        <input id="upload_images_comment" type="file" style={{display: "none"}} alt=""
+                               onChange={(e) => this.showImagePreview(e)} multiple/>
                     </Col>
                 </Row>
+                {this.state.publishing ? <Spinner animation="border"/> : preview()}
             </Container>
         )
     }

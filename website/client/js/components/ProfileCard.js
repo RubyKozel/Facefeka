@@ -6,18 +6,22 @@ import properties from "../../../websiteUtils/properties.json";
 
 const {base_url, routes} = properties;
 
-
-import '@babel/polyfill';
-
-const nopic = '../resources/nopic.png';
+import GeneralDialog from "./GeneralDialog";
 
 class ProfileCard extends Component {
     constructor(props) {
         super(props);
         this.name = props.name;
+        this.onPictureUploaded = props.onPictureUploaded;
+        this.canChange = props.canChange;
+        this.noFooter = props.noFooter || false;
+        this.imageClassName = props.imageClassName || "";
+        this.cardClassName = props.cardClassName || "";
+        this.titleClassName = props.titleClassName || "";
         this.state = {
             uploading: false,
-            profilePic: this.props.profilePic
+            profilePic: this.props.profilePic,
+            error: false
         }
     }
 
@@ -43,6 +47,7 @@ class ProfileCard extends Component {
         if (response.status && response.status === 200) {
             profilePic = (await response.json()).picture;
         } else {
+            this.setState({error: true});
             return Promise.reject();
         }
 
@@ -58,25 +63,35 @@ class ProfileCard extends Component {
             if (uploading) {
                 return <Spinner style={{margin: '7.3rem'}} animation="border" variant="primary"/>;
             } else {
-                return <Card.Img tag="a" onClick={() => $('#image_upload').click()}
+                return <Card.Img className={`${this.imageClassName}`}
+                                 tag="a" onClick={this.canChange ? () => $('#image_upload').click() : null}
                                  style={{cursor: "pointer"}}
                                  variant="top"
                                  src={profilePic}/>
             }
         };
 
+        const error = () => this.state.error ?
+            <GeneralDialog title="Error!" text="Opps! there was an error in your last action..."
+                           onClose={() => this.setState({error: false})}/> : <></>;
+
         return (
-            <Card className="text-center smallMarginTop largeMarginLeft">
-                {content()}
-                <input id="image_upload" type="file" style={{display: "none"}} alt=""
-                       onChange={(e) => this.uploadImage(e)}/>
-                <Card.Body>
-                    <Card.Title>{this.name}</Card.Title>
-                </Card.Body>
-                <Card.Footer>
-                    <Button variant="outline-primary" size="sm">Go To Profile</Button>
-                </Card.Footer>
-            </Card>
+            <>
+                {error()}
+                <Card className={`text-center ${this.cardClassName}`}>
+                    {content()}
+                    <input id="image_upload" type="file" style={{display: "none"}} alt=""
+                           onChange={(e) => this.uploadImage(e).then(() => this.onPictureUploaded())}/>
+                    <Card.Body className={`${this.titleClassName}`}>
+                        <Card.Title>{this.name}</Card.Title>
+                    </Card.Body>
+                    {!this.noFooter ?
+                        <Card.Footer>
+                            <Button onClick={() => window.location.href = 'profile.html'} variant="outline-primary"
+                                    size="sm">Go To Profile</Button>
+                        </Card.Footer> : <></>}
+                </Card>
+            </>
         )
     }
 }

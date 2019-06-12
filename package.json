@@ -21,6 +21,8 @@
     "body-parser": "^1.19.0",
     "bootstrap": "^4.3.1",
     "cloudinary": "^1.14.0",
+    "cloudinary-react": "^1.1.1",
+    "core-js": "^3.1.3",
     "crypto-js": "^3.1.9-1",
     "deparam": "^1.0.5",
     "express": "^4.16.4",

@@ -1,12 +1,10 @@
 import React, {Component} from 'react';
 import {Button, ButtonToolbar, Card, Row, ToggleButton, ToggleButtonGroup, Col} from "react-bootstrap";
 import {MDBInput} from "mdbreact";
-
 import properties from "../../../websiteUtils/properties.json";
+import GeneralDialog from "./GeneralDialog";
 
 const {base_url, routes} = properties;
-
-import '@babel/polyfill';
 
 class NewPost extends Component {
     constructor(props) {
@@ -14,20 +12,32 @@ class NewPost extends Component {
         this.onNewPost = props.onNewPost;
         this.name = props.name;
         this.creator = props.creator;
-        this.profile_pic = props.profile_pic;
         this.state = {
             text: "",
-            privacy: false
-        }
+            imagePreview: <></>,
+            profile_pic: props.profile_pic,
+            pictures: [],
+            privacy: false,
+            publishing: false,
+            error: false
+        };
+    }
+
+    componentWillReceiveProps(nextProps, nextContext) {
+        this.setState({profile_pic: nextProps.profile_pic});
     }
 
     async publishNewPost() {
-        const data = this.state;
-        data._creator = this.creator;
-        data.name = this.name;
-        data.profile_pic = this.profile_pic;
-        console.log(data);
-        const response = await fetch(`${base_url}${routes.new_post}`, {
+        this.setState({publishing: true});
+        const data = {
+            text: this.state.text,
+            privacy: this.state.privacy,
+            _creator: this.creator,
+            name: this.name,
+            profile_pic: this.state.profile_pic
+        };
+
+        let response = await fetch(`${base_url}${routes.new_post}`, {
             method: 'POST',
             mode: 'cors',
             body: JSON.stringify(data),
@@ -36,52 +46,96 @@ class NewPost extends Component {
                 'x-auth': localStorage.getItem('x-auth')
             }
         });
-
         if (response.status && response.status === 200) {
-            this.onNewPost(() => {
-                this.setState({text: ""});
-            });
-            this.setState({text: ""});
+            const post = await response.json();
+            if (this.state.pictures.length > 0) {
+                const post_id = post._id;
+                const formData = new FormData();
+                this.state.pictures.forEach((file, i) => formData.append(`${i}`, file));
+
+                const response = await fetch(`${base_url}${routes.upload_images_to_post_by_id}`.replace(':id', post_id), {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: formData,
+                    headers: {
+                        'x-auth': localStorage.getItem('x-auth')
+                    }
+                });
+
+                if (!(response.status && response.status === 200)) {
+                    this.setState({error: true});
+                    return Promise.reject();
+                }
+            }
+            this.onNewPost(() => this.setState({text: "", imagePreview: <></>, pictures: [], publishing: false}));
         } else {
-            console.log("Unable to post the new post");
+            this.setState({error: true, publishing: false});
+            return Promise.reject();
+        }
+    }
+
+    showImagePreview(e) {
+        const files = Array.from(e.target.files);
+        const width = files.length === 1 ? '100%' : files.length === 2 || files.length === 4 ? '50%' : '33.3333%';
+        let imagePreview = [];
+        for (const file of files) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                imagePreview.push(<Card.Img style={{width}} tag="a" variant="bottom" src={e.target.result}/>);
+                this.setState({imagePreview, pictures: files}, () => this.setState(this.state));
+            };
+            reader.readAsDataURL(file);
         }
     }
 
     render() {
-        console.log("rendering", this.state.text);
+        const preview = () => this.state.imagePreview.length > 0 ?
+            <Card.Body className="preview">{this.state.imagePreview}</Card.Body> : <></>;
+        const error = () => this.state.error ?
+            <GeneralDialog title="Error!" text="Opps! there was an error in your last action..."
+                           onClose={() => this.setState({error: false})}/> : <></>;
         return (
-            <Card className="post">
-                <Card.Header> Write new post </Card.Header>
-                <Card.Body>
-                    <MDBInput value={this.state.text} getValue={(text) => this.setState({text})} id="new-post"
-                              className="text-area"
-                              type="textarea" rows="5"/>
-                </Card.Body>
-                <Card.Footer>
-                    <Row>
-                        <Col md="3">
-                            <Button style={{padding: "6px"}} variant="outline-primary" size="md">Upload Images</Button>
-                        </Col>
-                        <Col md="5">
-                            <Button style={{margin: "0 45px 0 0"}} onClick={this.publishNewPost.bind(this)}
-                                    variant="outline-primary"
-                                    size="md">Publish</Button>
-                        </Col>
-                        <Col className="extraSmallRightMargin" sm="3">
-                            <ButtonToolbar>
-                                <ToggleButtonGroup style={{margin: "0 0 0 2.5rem"}}
-                                                   onChange={value => this.setState({privacy: value === 2})}
-                                                   type="radio"
-                                                   name="options"
-                                                   defaultValue={1}>
-                                    <ToggleButton value={1}>Public</ToggleButton>
-                                    <ToggleButton value={2}>Private</ToggleButton>
-                                </ToggleButtonGroup>
-                            </ButtonToolbar>
-                        </Col>
-                    </Row>
-                </Card.Footer>
-            </Card>
+            <>
+                {error()}
+                <Card className="post">
+                    <Card.Header> Write new post </Card.Header>
+                    <Card.Body>
+                        <MDBInput value={this.state.text} getValue={(text) => this.setState({text})} id="new-post"
+                                  className="text-area"
+                                  type="textarea" rows="5"/>
+                    </Card.Body>
+                    {preview()}
+                    <Card.Footer>
+                        <Row>
+                            <Col md="3">
+                                <Button onClick={this.state.publishing ? null : () => $('#upload_images').click()}
+                                        style={{padding: "6px"}}
+                                        variant="outline-primary" size="md">Upload Images</Button>
+                                <input id="upload_images" type="file" style={{display: "none"}} alt=""
+                                       onChange={(e) => this.showImagePreview(e)} multiple/>
+                            </Col>
+                            <Col md="5">
+                                <Button style={{margin: "0 45px 0 0"}} onClick={this.publishNewPost.bind(this)}
+                                        variant="outline-primary"
+                                        disabled={this.state.publishing}
+                                        size="md">{this.state.publishing ? 'Publishing...' : 'Publish'}</Button>
+                            </Col>
+                            <Col className="extraSmallRightMargin" sm="3">
+                                <ButtonToolbar>
+                                    <ToggleButtonGroup style={{margin: "0 0 0 2.5rem"}}
+                                                       onChange={value => this.setState({privacy: value === 2})}
+                                                       type="radio"
+                                                       name="options"
+                                                       defaultValue={1}>
+                                        <ToggleButton value={1}>Public</ToggleButton>
+                                        <ToggleButton value={2}>Private</ToggleButton>
+                                    </ToggleButtonGroup>
+                                </ButtonToolbar>
+                            </Col>
+                        </Row>
+                    </Card.Footer>
+                </Card>
+            </>
         )
     }
 }

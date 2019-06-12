@@ -2,11 +2,10 @@ import React, {Component} from 'react';
 import NewComment from "./NewComment";
 import Comment from "./Comment";
 import properties from "../../../websiteUtils/properties.json";
+import GeneralDialog from './GeneralDialog';
 
 const base_url = properties.base_url;
 const routes = properties.routes;
-
-import '@babel/polyfill';
 
 class CommentList extends Component {
     constructor(props) {
@@ -18,7 +17,8 @@ class CommentList extends Component {
         this._creator = props.creator;
         this.onNewComment = props.onNewComment;
         this.state = {
-            jsxComments: []
+            jsxComments: [],
+            error: false
         };
 
         this.getCommentsForPost().catch(() => console.log("couldn't get comments"));
@@ -47,6 +47,7 @@ class CommentList extends Component {
         if (response.status && response.status === 200) {
             post = await response.json();
         } else {
+            this.setState({error: true});
             return Promise.reject();
         }
 
@@ -70,12 +71,14 @@ class CommentList extends Component {
             if (response.status && response.status === 200) {
                 comment = await response.json();
             } else {
+                this.setState({error: true});
                 return Promise.reject();
             }
 
             const data = {
                 userName: comment.name,
                 profilePic: comment.profile_pic,
+                pictures: comment.pictures,
                 text: comment.text,
                 date: comment.date
             };
@@ -89,8 +92,12 @@ class CommentList extends Component {
     }
 
     render() {
+        const error = () => this.state.error ?
+            <GeneralDialog title="Error!" text="Opps! there was an error in your last action..."
+                           onClose={() => this.setState({error: false})}/> : <></>;
         return (
             <>
+                {error()}
                 <NewComment
                     creator={this._creator}
                     id={this.id}
@@ -98,7 +105,6 @@ class CommentList extends Component {
                     onNewComment={(callback) => {
                         this.fetchPostAndUpdateCommentList().then(() => this.getCommentsForPost());
                         callback();
-
                     }}
                     profilePic={this.profilePic}/>
                 {this.state.jsxComments}

@@ -4,7 +4,8 @@ module.exports = {
     entry: {
         index: './website/client/js/index.js',
         front: './website/client/js/front.js',
-        register: './website/client/js/register.js'
+        register: './website/client/js/register.js',
+        profile: './website/client/js/profile.js'
     },
     output: {
         path: path.resolve(__dirname),

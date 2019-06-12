@@ -1,4 +1,3 @@
-import '@babel/polyfill';
 import properties from '../../../websiteUtils/properties.json';
 
 const fetch_user = async () => {
@@ -8,8 +7,7 @@ const fetch_user = async () => {
         headers: {
             "Content-Type": "application/json",
             'x-auth': localStorage.getItem('x-auth')
-        },
-        body: JSON.stringify({})
+        }
     });
 
     if (await response.status !== 200) {
