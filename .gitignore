@@ -2,3 +2,4 @@
 .idea/
 /game/vendor
 /website/server/config/config.json
+/website/client/resources
