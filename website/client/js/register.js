@@ -30,7 +30,7 @@ $(document).ready(() => {
             data: JSON.stringify(form),
             success: () => {
                 alert(`Welcome to facefeka ${form.name}`);
-                window.location.href = '/';
+                window.location.href = '/facefeka';
             },
             error: (e) => {
                 const resp = e.responseJSON;

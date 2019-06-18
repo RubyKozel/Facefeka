@@ -1,16 +1,6 @@
 const path = require("path");
 
-module.exports = {
-    entry: {
-        index: './website/client/js/index.js',
-        front: './website/client/js/front.js',
-        register: './website/client/js/register.js',
-        profile: './website/client/js/profile.js'
-    },
-    output: {
-        path: path.resolve(__dirname),
-        filename: "./website/client/js/bundles/[name].bundle.js"
-    },
+const general = {
     module: {
         rules: [
             {
@@ -34,3 +24,28 @@ module.exports = {
         }
     }
 };
+
+const facefeka_config = {
+    entry: {
+        index: './website/client/js/index.js',
+        front: './website/client/js/front.js',
+        register: './website/client/js/register.js',
+        profile: './website/client/js/profile.js',
+    },
+    output: {
+        path: path.resolve(__dirname),
+        filename: "./website/client/js/bundles/[name].bundle.js"
+    }
+};
+
+const game_config = {
+    entry: {
+        game: './game/client/js/game.js'
+    },
+    output: {
+        path: path.resolve(__dirname),
+        filename: "./game/client/js/bundles/[name].bundle.js"
+    }
+};
+
+module.exports = [Object.assign(facefeka_config, general), Object.assign(game_config, general)];

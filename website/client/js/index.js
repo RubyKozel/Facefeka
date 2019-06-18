@@ -20,7 +20,7 @@ $(document).ready(() => {
             success: (data, textStatus, xhr) => {
                 localStorage.setItem('remember', rememberMe ? "true" : "false");
                 localStorage.setItem('x-auth', xhr.getResponseHeader('x-auth'));
-                window.location.href = '/front.html'
+                window.location.href = '/facefeka/front.html'
             },
             error: (e) => {
                 error_cred.html('Email or password are incorrect');
@@ -41,7 +41,7 @@ $(document).ready(() => {
                 'x-auth': localStorage.getItem('x-auth')
             },
             success: (data, textStatus, xhr) => {
-                window.location.href = '/front.html'
+                window.location.href = '/facefeka/front.html'
             },
             error: (e) => {
                 alert("Your token has expired, please login again!");

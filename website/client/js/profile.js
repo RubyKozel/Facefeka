@@ -13,5 +13,5 @@ fetchUser()
     })
     .catch(() => {
         alert('You have to be signed in first!');
-        window.location.href = '/'
+        window.location.href = '/facefeka'
     });

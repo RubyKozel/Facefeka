@@ -1,7 +1,9 @@
-require('./config/config');
+//########## CONFIGURATIONS
 
+require('./config/config');
 const properties = require('../websiteUtils/properties.json');
-const routes = properties.routes;
+const socketIO = require('socket.io');
+const http = require('http');
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -12,12 +14,21 @@ const {mongoose} = require('./db/mongoose.js');
 const {ObjectID} = require('mongodb');
 const {Post} = require('./components/post.js');
 const {User} = require('./components/user.js');
-const {authenticate, validate} = require('./middleware/authenticate');
+const {
+    authenticate,
+    validate
+} = require('./middleware/authenticate');
+
 const port = process.env.PORT || 3000;
 const app = express();
 const clientPath = path.join(__dirname, '../client');
+const gamePath = path.join(__dirname, '../../game/client');
+const routes = properties.routes;
+const server = http.createServer(app);
+const io = socketIO(server);
 
-app.use(express.static(clientPath));
+app.use('/facefeka', express.static(clientPath));
+app.use('/facefeka/game', express.static(gamePath));
 app.use(bodyParser.json());
 app.use(formData.parse());
 
@@ -293,5 +304,37 @@ const handleRequest = async (element, res, error, callback, sorted = false) => {
     }
 };
 
+const userMap = {};
 
-app.listen(port, () => console.log(`listening at port ${port}`));
+io.on('connection', socket => {
+    socket.on('newConnection', (id) => {
+        console.log("new connection has been made\n");
+        if (!userMap[id]) {
+            console.log("registering: ", id, "to", socket.id);
+            userMap[id] = socket.id;
+        }
+
+    });
+
+    socket.on('invite', (id) => {
+        try {
+            io.sockets.connected[userMap[id]].emit('send invitation');
+        } catch (e) {
+            socket.emit('error');
+        }
+    });
+
+    socket.on('disconnect', () => {
+        console.log("disconnecting");
+        for (const key in userMap) {
+            if (userMap.hasOwnProperty(key)) {
+                if (userMap[key] === socket.id) {
+                    delete userMap[key];
+                    break;
+                }
+            }
+        }
+    });
+});
+
+server.listen(port, () => console.log(`listening at port ${port}`));

@@ -7,27 +7,58 @@ import {MDBIcon} from "mdbreact";
 const base_url = properties.base_url;
 const routes = properties.routes;
 
+import {invite, socket, setUpdateFunction, setErrorFunction} from '../utils/invitationSockets'
+
 class FriendList extends Component {
     constructor(props) {
         super(props);
         this.friendList = props.friends;
         this.cardStyle = props.cardStyle;
+        this.user = props.user;
+        this.fromProfile = props.fromProfile;
         this.state = {
             users: [],
-            error: <></>
+            error: <></>,
+            invitePopUp: <></>
         };
         this.getAllFriends()
             .then((users) => {
                 console.log(users);
                 this.setState({users})
             })
-            .catch(() =>
-                <GeneralDialog
-                    title="Error!"
-                    text="Oops! We couldn't get your friends..."
-                    onClose={() => this.setState({error: <></>})}
-                />);
+            .catch(() => this.setState({
+                error:
+                    <GeneralDialog
+                        title="Error!"
+                        text="Oops! We couldn't get your friends..."
+                        onClose={() => this.setState({error: <></>})}
+                    />
+            }));
 
+        setUpdateFunction(() => {
+            this.setState({
+                invitePopUp:
+                    <GeneralDialog onClose={() => {
+                        localStorage.setItem('name', this.user.name);
+                        localStorage.setItem('action', 'subscribe');
+                        window.open('http://localhost:3000/facefeka/game/Game.html');
+                        this.setState({invitePopUp: <></>});
+                    }}
+                                   title={"Join a game"}
+                                   text={`Your friend ${this.user.name} has invited you to a game!`}/>
+            })
+        });
+
+        setErrorFunction(() => {
+            this.setState({
+                error:
+                    <GeneralDialog
+                        title="Error!"
+                        text="Oops! We couldn't get you into the game..."
+                        onClose={() => this.setState({error: <></>})}
+                    />
+            })
+        })
     }
 
     async getAllFriends() {
@@ -37,6 +68,15 @@ class FriendList extends Component {
         }));
     }
 
+    onFriendClicked(user) {
+        if (!user.connected)
+            return;
+        invite(user._id);
+        localStorage.setItem('name', this.user.name);
+        localStorage.setItem('action', 'create');
+        window.open('http://localhost:3000/facefeka/game/Game.html');
+    }
+
     render() {
         const friendList = () =>
             this.state.users
@@ -44,7 +84,8 @@ class FriendList extends Component {
                 .map(user =>
                     <>
                         <NavDropdown.Divider style={{margin: 'unset'}}/>
-                        <Media style={{padding: '1rem'}}>
+                        <Media style={{padding: '1rem'}}
+                               onClick={() => this.fromProfile ? null : this.onFriendClicked(user)}>
                             <Image style={{width: '15%', margin: "0.5rem 0 0 0"}} src={user.profile_pic} roundedCircle/>
                             <Media.Body style={{margin: '0.8rem'}}>
                                 <h5>{user.name}</h5>
@@ -55,15 +96,15 @@ class FriendList extends Component {
                                 }}/>
                             </Media.Body>
                         </Media>
-
                     </>);
 
         return (
             <>
+                {this.state.invitePopUp}
                 {this.state.error}
                 {this.state.users.length > 0 ?
                     <Card style={this.cardStyle}>
-                        <Card.Title style={{margin: '1rem'}}>Invite your friends</Card.Title>
+                        <Card.Title style={{margin: '1rem'}}>Friend List</Card.Title>
                         {friendList()}
                     </Card> : <></>}
             </>

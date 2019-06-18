@@ -1,0 +1,11 @@
+{
+  "autoload": {
+    "psr-4": {
+      "Game\\": "server\\src"
+    }
+  },
+  "require": {
+    "cboden/ratchet": "^0.4",
+    "ext-json": "*"
+  }
+}

@@ -119,7 +119,8 @@ class Home extends Component {
                                          onPictureUploaded={() => fetchUser().then(user => this.setState({user}))}/>
                         </Row>
                         <Row>
-                            <FriendList cardStyle={{'margin-left': '80px', 'margin-top': '1rem'}}
+                            <FriendList user={this.state.user}
+                                        cardStyle={{'margin-left': '80px', 'margin-top': '1rem'}}
                                         friends={this.state.user.friendList}/>
                         </Row>
                     </Col>

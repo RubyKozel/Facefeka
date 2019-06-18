@@ -12,7 +12,7 @@ const fetch_user = async () => {
 
     if (await response.status !== 200) {
         alert('You have to be signed in first!');
-        window.location.href = '/'
+        window.location.href = '/facefeka'
     } else {
         return await response.json();
     }

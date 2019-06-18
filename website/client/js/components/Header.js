@@ -37,7 +37,7 @@ class Header extends Component {
         localStorage.removeItem('remember');
         localStorage.removeItem('x-auth');
         if (redirect)
-            window.location.href = '/';
+            window.location.href = '/facefeka';
     }
 
     componentDidMount() {
@@ -81,7 +81,7 @@ class Header extends Component {
             <>
                 {this.state.showDialog ?
                     <GeneralDialog title="Token expired" text="Your token has expired, you should log in again"
-                                   onClose={() => window.location.href = '/'}/> : <></>}
+                                   onClose={() => window.location.href = '/facefeka'}/> : <></>}
                 <Navbar id="navbar" bg="primary" variant="dark">
                     <Navbar.Brand href="front.html">Facefeka</Navbar.Brand>
                     <Nav className="mr-auto">

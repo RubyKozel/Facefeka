@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import {Button, Modal} from "react-bootstrap";
 
 class GeneralDialog extends Component {
-    constructor(props, context) {
-        super(props, context);
+    constructor(props) {
+        super(props);
         this.text = props.text;
         this.title = props.title;
         this.onClose = props.onClose;

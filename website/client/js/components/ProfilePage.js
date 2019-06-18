@@ -9,6 +9,7 @@ import PostList from "./PostList";
 import properties from "../../../websiteUtils/properties.json";
 import Spinner from "react-bootstrap/Spinner";
 import FriendList from "./FriendList";
+import {socket} from '../utils/invitationSockets';
 
 const base_url = properties.base_url;
 const routes = properties.routes;
@@ -165,7 +166,9 @@ class ProfilePage extends Component {
                                     posts={this.state.postList}/>
                             </Col>
                             <Col>
-                                <FriendList cardStyle={{'margin-top': '1rem'}}
+                                <FriendList user={this.state.user}
+                                            fromProfile={true}
+                                            cardStyle={{'margin-top': '1rem'}}
                                             friends={this.state.user_profile.friendList}/>
                             </Col>
                         </Row>

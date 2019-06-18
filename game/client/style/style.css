@@ -1,0 +1,35 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 300;
+    font-size: .95rem;
+}
+
+canvas {
+    display: block;
+    background-size: cover;
+    background-image: url("https://d2v9y0dukr6mq2.cloudfront.net/video/thumbnail/VGiBmTeaeilt7mgjb/video-game-background-blue_451fb1bpx__F0000.png");
+    border: 1px solid black;
+    width: 90%;
+    height: auto;
+    margin: 1% 5% 0;
+}
+
+#players {
+    padding: 1em 1.5em;
+}
+
+#player-0 {
+    float: left;
+    margin-left: 22rem;
+    font-size: 30px;
+}
+
+#player-1 {
+    float: left;
+    margin-left: 30rem;
+    font-size: 30px;
+}
+
