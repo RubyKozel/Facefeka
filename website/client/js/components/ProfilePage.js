@@ -9,7 +9,6 @@ import PostList from "./PostList";
 import properties from "../../../websiteUtils/properties.json";
 import Spinner from "react-bootstrap/Spinner";
 import FriendList from "./FriendList";
-import {socket} from '../utils/invitationSockets';
 
 const base_url = properties.base_url;
 const routes = properties.routes;

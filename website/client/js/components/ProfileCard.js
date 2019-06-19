@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Card} from "react-bootstrap";
-import Spinner from "react-bootstrap/Spinner";
+import {Button, Card, Spinner} from "react-bootstrap";
 
 import properties from "../../../websiteUtils/properties.json";
 

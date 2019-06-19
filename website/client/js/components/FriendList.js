@@ -45,7 +45,7 @@ class FriendList extends Component {
                         this.setState({invitePopUp: <></>});
                     }}
                                    title={"Join a game"}
-                                   text={`Your friend ${this.user.name} has invited you to a game!`}/>
+                                   text={`Your friend has invited you to a game!`}/>
             })
         });
 

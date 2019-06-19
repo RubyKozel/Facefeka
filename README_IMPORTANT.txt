@@ -23,7 +23,7 @@ Due to the face that those are secrets, i've removed them from the file as they 
    After the registration completes, you should be provided with three secrets: cloud name, api_key and api_secret. 
    All three should be inserted in the relevant places in Config.json file.
 5. The JWT_SECRET attribute in Config.json is a scrambled random string that can be changed, to your likes.
-6. Navigate to FaceFeka folder and start the server by running npm install. This will start webpack, build your project and run it on port 3000.
+6. Navigate to FaceFeka folder and start the server by running npm start. This will start webpack, build your project and run it on port 3000.
 7. In the FaceFeka/game/server folder, run php server.php in order to run the php server for the game. 
    The game will be hosted on port 4000, tho the access to the game is via the facefeka interface on localhost:3000
 8. Navigate to localhost:3000/facefeka in order to get to the login page.

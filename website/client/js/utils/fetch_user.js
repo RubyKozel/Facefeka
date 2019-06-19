@@ -1,7 +1,9 @@
 import properties from '../../../websiteUtils/properties.json';
 
+const {base_url, routes} = properties;
+
 const fetch_user = async () => {
-    const response = await fetch(`${properties.base_url}${properties.routes.sign_in_auth}`, {
+    const response = await fetch(`${base_url}${routes.sign_in_auth}`, {
         method: 'POST',
         mode: 'cors',
         headers: {
