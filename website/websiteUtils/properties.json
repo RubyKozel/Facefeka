@@ -20,6 +20,7 @@
     "upload_profile_pic": "/upload_profile_pic",
     "upload_theme_pic": "/upload_theme_pic",
     "upload_images_to_post_by_id": "/upload_images/:id",
-    "toggle_privacy": "/toggle_privacy/:id"
+    "toggle_privacy": "/toggle_privacy/:id",
+    "add_score_by_id": "/add_score"
   }
 }

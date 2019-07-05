@@ -1,5 +1,6 @@
 const conn = new WebSocket('ws://localhost:4000');
-
+const properties = require('../../../website/websiteUtils/properties.json');
+const {base_url, routes} = properties;
 const canvas = document.getElementById('game');
 const canvasWidth = window.innerWidth;
 const canvasHeight = window.innerHeight;
@@ -17,8 +18,7 @@ document.onkeydown = (e) => {
     if (e.code === 'ArrowUp') {
         keyUp = true;
         keyDown = false;
-    }
-    else if (e.code === 'ArrowDown') {
+    } else if (e.code === 'ArrowDown') {
         keyDown = true;
         keyUp = false;
     }
@@ -76,7 +76,7 @@ conn.onopen = () => {
 };
 
 
-conn.onmessage = (e) => {
+conn.onmessage = async (e) => {
     const response = JSON.parse(e.data);
     switch (response.type) {
         case 'name':
@@ -105,8 +105,29 @@ conn.onmessage = (e) => {
         case 'game over':
             clearInterval(gameInterval);
             const element = `player-${response.value}`;
-            alert(`Game over! ${document.getElementById(element).innerHTML} has won!!`);
+           if (localStorage.getItem('myIndex') === response.value) {
+                const response = await fetch(`${base_url}${routes.add_score_by_id}`, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        "Content-Type": "application/json",
+                        'x-auth': localStorage.getItem('x-auth')
+                    }
+                });
+                if (response.status && response.status === 200) {
+                    const json = await response.json();
+                    const score = json.score;
+                    conn.send(JSON.stringify({type: 'alert_winner', value: score, winner: `${document.getElementById(element).innerHTML}`}));
+                } else {
+                    console.log("error in getting scores");
+                }
 
+            }
+            break;
+        case 'alert_winner':
+            const winner = response.winner;
+            const winner_score = response.score;
+            alert(`${winner} has won!! his score is ${winner_score}!`);
     }
 };
 

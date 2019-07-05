@@ -14,6 +14,8 @@ const {mongoose} = require('./db/mongoose.js');
 const {ObjectID} = require('mongodb');
 const {Post} = require('./components/post.js');
 const {User} = require('./components/user.js');
+const {Scores} = require('./components/scores.js');
+
 const {
     authenticate,
     validate
@@ -141,32 +143,43 @@ app.get(routes.friend_list, authenticate, async (req, res) => {
 
 app.post(routes.upload_profile_pic, authenticate, async (req, res) => {
     const values = Object.values(req.files);
-    cloudinary
-        .uploader
-        .upload(values[0].path)
-        .then((image) =>
-            User.findOneAndUpdate(
-                {_id: req.user._id},
-                {$set: {profile_pic: image.secure_url}},
-                {new: true})
-        )
-        .then(user => res.status(200).send({picture: user.profile_pic}))
-        .catch(e => console.log(e));
+    try {
+        const image = await cloudinary.uploader.upload(values[0].path);
+        const user = await User.findOneAndUpdate({_id: req.user._id}, {$set: {profile_pic: image.secure_url}}, {new: true});
+        res.status(200).send({picture: user.profile_pic});
+    } catch (e) {
+        console.log(e);
+    }
+
 });
 
 app.post(routes.upload_theme_pic, authenticate, async (req, res) => {
     const values = Object.values(req.files);
-    cloudinary
-        .uploader
-        .upload(values[0].path)
-        .then((image) =>
-            User.findOneAndUpdate(
-                {_id: req.user._id},
-                {$set: {theme_pic: image.secure_url}},
-                {new: true})
-        )
-        .then(user => res.status(200).send({picture: user.theme_pic}))
-        .catch(e => console.log(e));
+    try {
+        const image = await cloudinary.uploader.upload(values[0].path);
+        const user = await User.findOneAndUpdate({_id: req.user._id}, {$set: {theme_pic: image.secure_url}}, {new: true});
+        res.status(200).send({picture: user.theme_pic});
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+app.post(routes.add_score_by_id, authenticate, async (req, res) => {
+    const id = req.user._id;
+    try {
+        const score = await Scores.findOne({userId: id});
+        if(score){
+            await Scores.updateOne({userId: id}, {$inc: {score: 1}}, {new: true});
+            res.status(200).send({score: score.score + 1});
+        } else {
+            const user = await User.findOne({_id: id});
+            const newScore = new Scores({userId: user._id, name: user.name, score: 1});
+            newScore.save();
+            res.status(200).send({score: 1});
+        }
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 /* ### Post Routes ### */
@@ -189,7 +202,7 @@ app.post(routes.upload_images_to_post_by_id, validate, async (req, res) => {
 
     Promise.all(promises)
         .then(post => res.status(200).send({pictures: post.pictures}))
-        .catch(e => console.log(e))
+        .catch(e => console.log(e));
 });
 
 app.post(routes.new_post, async (req, res) => {

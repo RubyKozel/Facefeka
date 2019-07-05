@@ -113,7 +113,13 @@ class Game implements MessageComponentInterface
                     $conn->send(json_encode(array('type' => 'ball', 'value' => array('ballX' => $ballX, 'ballY' => $ballY))));
                 }
                 break;
-
+            case 'alert_winner':
+                $winner = $json->winner;
+                $score = $json->value;
+                foreach ($this->connections as $conn) {
+                    $conn->send(json_encode(array('type' => 'alert_winner', 'winner' => $winner, 'score' => $score)));
+                }
+                break;
         }
 
     }
