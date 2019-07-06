@@ -114,11 +114,9 @@ export default class Post extends Component {
             }
             return <></>;
         };
-
         const likeIconClass = () => this.data.likes.includes(this.current_user._id) ?
             `indigo-text pr-3 iconButtonClicked ${this.post_id}` :
             `indigo-text pr-3 iconButton ${this.post_id}`;
-
         const dropDownMenu = () => this.data._creator === this.current_user._id ?
             <div className="customHamburgerIcon">
                 <Dropdown>

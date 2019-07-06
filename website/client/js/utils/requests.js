@@ -61,5 +61,3 @@ export const GET_AUTH = async (url) => {
         },
     });
 };
-
-//module.exports = {POST, POST_AUTH, POST_FORM_DATA_AUTH, GET, GET_AUTH, DELETE};
