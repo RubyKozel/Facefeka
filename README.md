@@ -10,15 +10,15 @@ Due to the face that those are secrets, i've removed them from the file as they 
 
 3. In order to use mongoDB you should first download mongoDB to your localhost. It is also extremely recommended that you download Robo 3T which is a GUI program for mongoDB.
    You have two options to run mongoDB:
-	- First one is to use your local mongoDB that you’ve just downloaded. 
+	- First one is to use your local mongoDB that youâ€™ve just downloaded. 
 	  In order to do so, you need to adjust your package.json file: in the start script, you should change the NODE_ENV to development instead of production.
 	- Second one is to use mongoDB cloud. In order to do so, please register to mongoDB cloud in https://cloud.mongodb.com. 
 	  After your register to the cloud, you should define a user name and a password to be used in the cluster.
 	  When you have defined a user, you need to adjust some things in the code.
-	  In the mongodb cloud cluster cockpit, select the ‘connect’ button and then ‘connect your application’
+	  In the mongodb cloud cluster cockpit, select the â€˜connectâ€™ button and then â€˜connect your applicationâ€™
 	  It should provide you with a url to use to connect to the cloud cluster. Put your username and password in the relevant places and copy the link.
-	  In Config.json file, under ‘production’, paste the link to the MONGODB_URI attribute.
-	  In package.json file, in your start script, change ‘development’ to ‘production’ in all places, if production is not already set.
+	  In Config.json file, under â€˜productionâ€™, paste the link to the MONGODB_URI attribute.
+	  In package.json file, in your start script, change â€˜developmentâ€™ to â€˜productionâ€™ in all places, if production is not already set.
 4. In order to use cloudinary, please register to the cloudinary website at https://cloudinary.com/.
    After the registration completes, you should be provided with three secrets: cloud name, api_key and api_secret. 
    All three should be inserted in the relevant places in Config.json file.
