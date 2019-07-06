@@ -3,11 +3,11 @@ import {Button, Form, Nav, Navbar} from 'react-bootstrap';
 import properties from '../../../websiteUtils/properties.json';
 import DropdownInput from './DropdownInput';
 import GeneralDialog from "./GeneralDialog";
+import {DELETE, GET} from '../utils/requests.js';
 
-const base_url = properties.base_url;
-const routes = properties.routes;
+const {base_url, routes} = properties;
 
-class Header extends Component {
+export default class Header extends Component {
     constructor(props) {
         super(props);
         this.name = props.name;
@@ -24,15 +24,7 @@ class Header extends Component {
     }
 
     static async logout(redirect = true) {
-        await fetch(`${base_url}${routes.remove_my_token}`, {
-            method: "DELETE",
-            body: JSON.stringify({}),
-            mode: 'cors',
-            headers: {
-                "Content-Type": "application/json",
-                'x-auth': localStorage.getItem('x-auth')
-            }
-        });
+        await DELETE(`${base_url}${routes.remove_my_token}`);
 
         localStorage.removeItem('remember');
         localStorage.removeItem('x-auth');
@@ -43,8 +35,8 @@ class Header extends Component {
     componentDidMount() {
         $(window).on('scroll', () => {
             const navbar = $("#navbar");
-            const sticky = navbar.offset().top;
-            if (window.pageYOffset >= sticky) {
+            const top = navbar.offset().top;
+            if (window.pageYOffset >= top) {
                 navbar.addClass("sticky")
             } else {
                 navbar.removeClass("sticky");
@@ -53,7 +45,7 @@ class Header extends Component {
     }
 
     async getAllUsers() {
-        const response = await fetch(`${base_url}${routes.get_all_users}`, {mode: 'cors'});
+        const response = await GET(`${base_url}${routes.get_all_users}`);
         if (response.status && response.status === 200) {
             let users = await response.json();
             users = users.filter(otherUser => otherUser._id !== this.user_id);
@@ -80,7 +72,8 @@ class Header extends Component {
         return (
             <>
                 {this.state.showDialog ?
-                    <GeneralDialog title="Token expired" text="Your token has expired, you should log in again"
+                    <GeneralDialog title="Token expired"
+                                   text="Your token has expired, you should log in again"
                                    onClose={() => window.location.href = '/facefeka'}/> : <></>}
                 <Navbar id="navbar" bg="primary" variant="dark">
                     <Navbar.Brand href="front.html">Facefeka</Navbar.Brand>
@@ -98,5 +91,3 @@ class Header extends Component {
         )
     }
 }
-
-export default Header;

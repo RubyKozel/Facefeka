@@ -6,11 +6,11 @@ import GeneralDialog from './GeneralDialog';
 import ImagePopup from './ImagePopup';
 import getFormattedDate from '../utils/timeFormatter.js';
 import properties from "../../../websiteUtils/properties.json";
+import {POST_AUTH, DELETE} from '../utils/requests.js';
 
-const base_url = properties.base_url;
-const routes = properties.routes;
+const {base_url, routes} = properties;
 
-class Post extends Component {
+export default class Post extends Component {
     constructor(props) {
         super(props);
         this.data = props.post;
@@ -50,7 +50,6 @@ class Post extends Component {
     };
 
     async likePost() {
-        console.log(this.post_id);
         const likeButton = $(`.${this.post_id}`);
         let like;
         if (likeButton.hasClass('iconButtonClicked')) {
@@ -60,43 +59,26 @@ class Post extends Component {
             like = true;
             likeButton.addClass('iconButtonClicked');
         }
+        const response = await POST_AUTH(`${base_url}${routes.like_post_by_id}`.replace(':id', this.data._id),
+            {like, _id: this.current_user._id});
 
-        const response = await fetch(`${base_url}${routes.like_post_by_id}`.replace(':id', this.data._id), {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-                "Content-Type": "application/json",
-                'x-auth': localStorage.getItem('x-auth')
-            },
-            body: JSON.stringify({like, _id: this.current_user._id})
-        });
-
-        let likes = null;
         if (response.status && response.status === 200) {
-            likes = await response.json();
+            return await response.json();
         } else {
             this.setState({error: true});
             return Promise.reject();
         }
-
-        return likes;
     }
 
     async deletePost() {
-        const response = await fetch(`${base_url}${routes.delete_post_by_id}`.replace(':id', this.data._id), {
-            method: 'DELETE',
-            mode: 'cors',
-            headers: {
-                "Content-Type": "application/json",
-                'x-auth': localStorage.getItem('x-auth')
-            }
-        });
+        const response = await DELETE(`${base_url}${routes.delete_post_by_id}`.replace(':id', this.data._id));
 
         if (response.status && response.status === 200) {
             this.setState({
-                postDeleteDialog: <GeneralDialog title="Post deleted"
-                                                 text="Your post has been deleted successfully"
-                                                 onClose={() => this.setState({postDeleteDialog: <></>}, this.onDeletePost)}/>
+                postDeleteDialog:
+                    <GeneralDialog title="Post deleted"
+                                   text="Your post has been deleted successfully"
+                                   onClose={() => this.setState({postDeleteDialog: <></>}, this.onDeletePost)}/>
             });
         } else {
             return Promise.reject();
@@ -104,18 +86,7 @@ class Post extends Component {
     }
 
     async changePrivacy() {
-        const privacy = !this.state.privacy;
-
-        const response = await fetch(`${base_url}${routes.toggle_privacy}`.replace(':id', this.data._id), {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-                "Content-Type": "application/json",
-                'x-auth': localStorage.getItem('x-auth')
-            },
-            body: JSON.stringify({privacy})
-        });
-
+        const response = await POST_AUTH(`${base_url}${routes.toggle_privacy}`.replace(':id', this.data._id), {privacy: !this.state.privacy});
         if (response.status && response.status === 200) {
             return await response.json();
         } else {
@@ -129,13 +100,17 @@ class Post extends Component {
             if (this.data.pictures && this.data.pictures.length > 0) {
                 const length = this.data.pictures.length;
                 const width = length === 1 ? '100%' : length === 2 || length === 4 ? '50%' : '33.3333%';
-                const jsx = this.data.pictures.map(picture =>
-                    <Card.Img onClick={() => this.setState({popUp: picture})}
-                              style={{width, cursor: "pointer"}}
-                              tag="a"
-                              variant="bottom"
-                              src={picture}/>);
-                return <Card.Body>{jsx}</Card.Body>
+                return (
+                    <Card.Body>{this.data.pictures.map(picture =>
+                        <Card.Img onClick={() => this.setState({popUp: picture})}
+                                  style={{width}}
+                                  className="clickable"
+                                  tag="a"
+                                  variant="bottom"
+                                  src={picture}
+                        />)}
+                    </Card.Body>
+                )
             }
             return <></>;
         };
@@ -149,18 +124,15 @@ class Post extends Component {
                 <Dropdown>
                     <Dropdown.Toggle className="customIconToggle">
                         <MDBIcon icon="bars"
-                                 style={{cursor: "pointer", margin: "0 0 0 1rem"}}/>
+                                 className="clickable smallMarginBottom"/>
                     </Dropdown.Toggle>
                     <Dropdown.Menu className="post_menu">
-                        <ul className="list-unstyled" style={{margin: "unset"}}>
-                            <Dropdown.Item onSelect={() => this.deletePost().catch(() => this.setState({error: true}))}>Delete
-                                Post</Dropdown.Item>
+                        <ul className="list-unstyled noMargin">
                             <Dropdown.Item
-                                onSelect={() =>
-                                    this.changePrivacy()
-                                        .then(privacy => this.setState({privacy}))
-                                        .catch(() => this.setState({error: true}))
-                                }>
+                                onSelect={() => this.deletePost().catch(() => this.setState({error: true}))}>
+                                Delete Post</Dropdown.Item>
+                            <Dropdown.Item
+                                onSelect={() => this.changePrivacy().then(privacy => this.setState({privacy})).catch(() => this.setState({error: true}))}>
                                 Change Privacy
                             </Dropdown.Item>
                         </ul>
@@ -170,17 +142,17 @@ class Post extends Component {
 
         return (
             <>
-                {this.state.error ?
-                    <GeneralDialog title="Error!" text="Opps! there was an error in your last action..."
-                                   onClose={() => this.setState({error: false})}/> : <></>}
+                {this.state.error ? <GeneralDialog title="Error!"
+                                                   text="Opps! there was an error in your last action..."
+                                                   onClose={() => this.setState({error: false})}/> : <></>}
                 {this.state.popUp ?
                     <ImagePopup src={this.state.popUp} close={() => this.setState({popUp: null})}/> : <></>}
                 {this.state.postDeleteDialog}
-                <Card className="post" style={{width: '40rem'}}>
+                <Card className="post">
                     <Card.Body>
                         <Row>
                             <Col>
-                                <Image style={{width: '110%'}} src={this.data.profile_pic} roundedCircle/>
+                                <Image className="postProfileImage" src={this.data.profile_pic} roundedCircle/>
                             </Col>
                             <Col className="profileNameAndDateMargin" md="10">
                                 <Card.Title className="profileNameMargin">{this.data.name}</Card.Title>
@@ -191,7 +163,9 @@ class Post extends Component {
                                     placement="bottom"
                                     overlay={
                                         <Tooltip id="tooltip_lock">
-                                            {this.state.privacy ? "This is a private post, only you can see it." : "This is a public post, anyone can see it."}
+                                            {this.state.privacy ?
+                                                "This is a private post, only you can see it." :
+                                                "This is a public post, anyone can see it."}
                                         </Tooltip>
                                     }>
                                     {this.state.privacy ? <MDBIcon icon="lock"/> : <MDBIcon icon="globe-asia"/>}
@@ -209,7 +183,9 @@ class Post extends Component {
                             <Col sm="8">
                                 <p><MDBIcon onClick={() => this.likePost().then((likes) => this.setState({likes}))}
                                             far icon="thumbs-up" size="2x"
-                                            className={likeIconClass()}/>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.likes.length}
+                                            className={likeIconClass()}/>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    {this.state.likes.length}
                                 </p>
                             </Col>
                             <Col sm="4">
@@ -219,9 +195,11 @@ class Post extends Component {
                                         show_div: that.state.collapsed ? <></> : that.state.commentsJsx,
                                         collapsed: !that.state.collapsed
                                     })
-                                }}>
-                                    <MDBIcon far icon="comment" size="2x"
-                                             className="indigo-text pr-3 iconButton"/>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.comments}
+                                }}><MDBIcon
+                                    far icon="comment" size="2x"
+                                    className="indigo-text pr-3 iconButton"/>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    {this.state.comments}
                                 </p>
                             </Col>
                         </Row>
@@ -232,5 +210,3 @@ class Post extends Component {
         )
     }
 }
-
-export default Post;

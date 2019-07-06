@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import {Button, Card, Spinner} from "react-bootstrap";
-
+import GeneralDialog from "./GeneralDialog";
 import properties from "../../../websiteUtils/properties.json";
+import {POST_FORM_DATA_AUTH} from '../utils/requests.js';
 
 const {base_url, routes} = properties;
 
-import GeneralDialog from "./GeneralDialog";
-
-class ProfileCard extends Component {
+export default class ProfileCard extends Component {
     constructor(props) {
         super(props);
         this.name = props.name;
@@ -29,18 +28,9 @@ class ProfileCard extends Component {
         this.setState({uploading: true});
 
         const formData = new FormData();
-
         formData.append('file', files[0]);
 
-        const response = await fetch(`${base_url}${routes.upload_profile_pic}`, {
-            method: 'POST',
-            mode: 'cors',
-            body: formData,
-            headers: {
-                'x-auth': localStorage.getItem('x-auth')
-            }
-        });
-
+        const response = await POST_FORM_DATA_AUTH(`${base_url}${routes.upload_profile_pic}`, formData);
 
         let profilePic = null;
         if (response.status && response.status === 200) {
@@ -57,16 +47,14 @@ class ProfileCard extends Component {
     }
 
     render() {
-        const {uploading, profilePic} = this.state;
         const content = () => {
-            if (uploading) {
-                return <Spinner style={{margin: '7.3rem'}} animation="border" variant="primary"/>;
+            if (this.state.uploading) {
+                return <Spinner className="homeProfileCardUploadSpinner" animation="border" variant="primary"/>;
             } else {
-                return <Card.Img className={`${this.imageClassName}`}
+                return <Card.Img className={`${this.imageClassName} clickable`}
                                  tag="a" onClick={this.canChange ? () => $('#image_upload').click() : null}
-                                 style={{cursor: "pointer"}}
                                  variant="top"
-                                 src={profilePic}/>
+                                 src={this.state.profilePic}/>
             }
         };
 
@@ -79,20 +67,17 @@ class ProfileCard extends Component {
                 {error()}
                 <Card className={`text-center ${this.cardClassName}`}>
                     {content()}
-                    <input id="image_upload" type="file" style={{display: "none"}} alt=""
+                    <input className="noDisplay" id="image_upload" type="file" alt=""
                            onChange={(e) => this.uploadImage(e).then(() => this.onPictureUploaded())}/>
-                    <Card.Body className={`${this.titleClassName}`}>
-                        <Card.Title>{this.name}</Card.Title>
-                    </Card.Body>
-                    {!this.noFooter ?
+                    <Card.Body className={`${this.titleClassName}`}><Card.Title>{this.name}</Card.Title></Card.Body>
+                    {this.noFooter ?
+                        <></> :
                         <Card.Footer>
                             <Button onClick={() => window.location.href = 'profile.html'} variant="outline-primary"
                                     size="sm">Go To Profile</Button>
-                        </Card.Footer> : <></>}
+                        </Card.Footer>}
                 </Card>
             </>
         )
     }
 }
-
-export default ProfileCard;

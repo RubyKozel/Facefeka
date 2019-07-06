@@ -3,11 +3,11 @@ import NewComment from "./NewComment";
 import Comment from "./Comment";
 import properties from "../../../websiteUtils/properties.json";
 import GeneralDialog from './GeneralDialog';
+import {GET_AUTH} from '../utils/requests.js';
 
-const base_url = properties.base_url;
-const routes = properties.routes;
+const {base_url, routes} = properties;
 
-class CommentList extends Component {
+export default class CommentList extends Component {
     constructor(props) {
         super(props);
         this.profilePic = props.profilePic;
@@ -22,28 +22,17 @@ class CommentList extends Component {
         };
 
         this.getCommentsForPost().catch(() => console.log("couldn't get comments"));
-
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
         this.profilePic = nextProps.profilePic;
         this.comments = nextProps.comments;
-
         this.getCommentsForPost().catch(() => console.log("couldn't get comments"));
     }
 
     async fetchPostAndUpdateCommentList() {
-        let response = await fetch(`${base_url}${routes.get_post_by_id}`.replace(':id', this.id), {
-            method: 'GET',
-            mode: 'cors',
-            headers: {
-                "Content-Type": "application/json",
-                'x-auth': localStorage.getItem('x-auth')
-            }
-        });
-
+        let response = await GET_AUTH(`${base_url}${routes.get_post_by_id}`.replace(':id', this.id));
         let post = null;
-
         if (response.status && response.status === 200) {
             post = await response.json();
         } else {
@@ -57,38 +46,18 @@ class CommentList extends Component {
     async getCommentsForPost() {
         let jsxComments = [];
         for (const comment_id of this.comments) {
-            let response = await fetch(`${base_url}${routes.get_post_by_id}`.replace(':id', comment_id), {
-                method: 'GET',
-                mode: 'cors',
-                headers: {
-                    "Content-Type": "application/json",
-                    'x-auth': localStorage.getItem('x-auth')
-                }
-            });
-
+            let response = await GET_AUTH(`${base_url}${routes.get_post_by_id}`.replace(':id', comment_id));
             let comment = null;
-
             if (response.status && response.status === 200) {
                 comment = await response.json();
+                jsxComments.push(<Comment data={comment}/>);
             } else {
                 this.setState({error: true});
                 return Promise.reject();
             }
-
-            const data = {
-                userName: comment.name,
-                profilePic: comment.profile_pic,
-                pictures: comment.pictures,
-                text: comment.text,
-                date: comment.date
-            };
-
-            jsxComments.push(<Comment data={data}/>);
         }
         const that = this;
-        this.setState({jsxComments}, () => {
-            that.onNewComment(that.state.jsxComments.length);
-        });
+        this.setState({jsxComments}, () => that.onNewComment(that.state.jsxComments.length));
     }
 
     render() {
@@ -112,5 +81,3 @@ class CommentList extends Component {
         )
     }
 }
-
-export default CommentList;

@@ -1,15 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Home from './components/Home'
-import fetch_user from './utils/fetch_user'
+import {fetchUser} from './utils/fetch_user'
 import {newConnection} from './utils/invitationSockets'
 
-fetch_user()
-    .then(user => {
+(async () => {
+    try {
+        const user = await fetchUser();
         newConnection(user._id);
         ReactDOM.render(<Home user={user}/>, document.querySelector('.container'));
-    })
-    .catch(() => {
+    } catch (e) {
         alert('You have to be signed in first!');
         window.location.href = '/facefeka'
-    });
+    }
+})();

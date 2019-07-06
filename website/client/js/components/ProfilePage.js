@@ -1,19 +1,19 @@
 import React, {Component} from 'react';
 import Header from "./Header";
-import {Card, Col, Container, Jumbotron, Row} from "react-bootstrap";
+import {Col, Container, Jumbotron, Row} from "react-bootstrap";
 import GeneralDialog from "./GeneralDialog";
 import ProfileCard from "./ProfileCard";
-import fetchUser from "../utils/fetch_user";
+import {fetchUser} from "../utils/fetch_user";
 import NewPost from "./NewPost";
 import PostList from "./PostList";
 import properties from "../../../websiteUtils/properties.json";
 import Spinner from "react-bootstrap/Spinner";
 import FriendList from "./FriendList";
+import {GET_AUTH, POST_FORM_DATA_AUTH} from '../utils/requests.js';
 
-const base_url = properties.base_url;
-const routes = properties.routes;
+const {base_url, routes} = properties;
 
-class ProfilePage extends Component {
+export default class ProfilePage extends Component {
     constructor(props) {
         super(props);
         this.allPosts = [];
@@ -32,26 +32,18 @@ class ProfilePage extends Component {
 
     async getPostList(id) {
         this.setState({loading: true});
-        let response = await fetch(`${base_url}${routes.get_all_posts_by_id}`.replace(':id', id), {
-            method: 'GET',
-            mode: 'cors',
-            headers: {
-                "Content-Type": "application/json",
-                'x-auth': localStorage.getItem('x-auth')
-            }
-        });
+        let response = await GET_AUTH(`${base_url}${routes.get_all_posts_by_id}`.replace(':id', id));
+        const that = this;
 
-        let postList = [];
         if (response.status && response.status === 200) {
-            postList = (await response.json()).filter(post => !post.is_comment);
+            this.allPosts = (await response.json()).filter(post => !post.is_comment);
         } else {
             this.setState({error: true});
             return Promise.reject();
         }
 
-        this.allPosts = postList;
         const currIndex = this.state.currIndex + 8;
-        this.setState({currIndex, postList: postList.slice(0, currIndex)});
+        this.setState({currIndex, postList: that.allPosts.slice(0, currIndex)});
     }
 
     componentDidMount() {
@@ -77,18 +69,9 @@ class ProfilePage extends Component {
         this.setState({uploading: true});
 
         const formData = new FormData();
-
         formData.append('file', files[0]);
 
-        const response = await fetch(`${base_url}${routes.upload_theme_pic}`, {
-            method: 'POST',
-            mode: 'cors',
-            body: formData,
-            headers: {
-                'x-auth': localStorage.getItem('x-auth')
-            }
-        });
-
+        const response = await POST_FORM_DATA_AUTH(`${base_url}${routes.upload_theme_pic}`, formData);
 
         let profilePic = null;
         if (response.status && response.status === 200) {
@@ -106,36 +89,33 @@ class ProfilePage extends Component {
 
     render() {
         const error = () => this.state.error ?
-            <GeneralDialog title="Error!" text="Opps! there was an error in your last action..."
+            <GeneralDialog title="Error!"
+                           text="Opps! there was an error in your last action..."
                            onClose={() => this.setState({error: false})}/> : <></>;
         const spinner = () => this.state.uploading ?
-            <Spinner style={{marginLeft: '31.6%', position: 'absolute'}} animation="border" variant="primary"/> : <></>;
+            <Spinner className="profilePageUploadSpinner" animation="border" variant="primary"/> : <></>;
 
         return (
             <>
                 {error()}
                 <Container>
-                    <Header user_id={this.state.user._id} name={this.state.user.name}
+                    <Header user_id={this.state.user._id}
+                            name={this.state.user.name}
                             friends={this.state.user.friendList}/>
                     <Jumbotron
                         onClick={this.canChange ? () => $('#theme_upload').click() : null}
-                        style={{
-                            cursor: 'pointer',
-                            display: 'block',
-                            height: '250px',
-                            backgroundImage: `url("${this.state.user_profile.theme_pic}")`,
-                            backgroundSize: 'cover'
-                        }} fluid>
+                        className="profileThemeImage"
+                        style={{backgroundImage: `url("${this.state.user_profile.theme_pic}")`}} fluid>
                         {spinner()}
-                        <input id="theme_upload" type="file" style={{display: "none"}} alt=""
+                        <input className="noDisplay" id="theme_upload" type="file" alt=""
                                onChange={(e) => this.uploadImage(e)
                                    .then(fetchUser)
                                    .then(user => this.setState({user, user_profile: user}))}/>
                         <Container>
                             <ProfileCard
-                                titleClassName={"profileCustomTitle"}
-                                imageClassName={"profileCustomImage rounded-circle"}
-                                cardClassName={"profileCustomCard"}
+                                titleClassName="profileCustomTitle"
+                                imageClassName="profileCustomImage rounded-circle"
+                                cardClassName="profileCustomCard"
                                 noFooter={true}
                                 canChange={this.canChange}
                                 name={this.state.user_profile.name}
@@ -152,11 +132,7 @@ class ProfilePage extends Component {
                                     creator={this.state.user._id}
                                     onNewPost={(c) => this.refreshPosts(c)}/>
                                 {this.state.loading ?
-                                    <Spinner animation="border" style={{
-                                        width: '10rem',
-                                        height: '10rem',
-                                        margin: '5rem'
-                                    }}/> : <></>}
+                                    <Spinner animation="border" className="profilePagePostsSpinner"/> : <></>}
                                 <PostList
                                     onDeletePost={this.refreshPosts.bind(this)}
                                     user_id={this.state.user._id}
@@ -167,7 +143,7 @@ class ProfilePage extends Component {
                             <Col>
                                 <FriendList user={this.state.user}
                                             fromProfile={true}
-                                            cardStyle={{'margin-top': '1rem'}}
+                                            cardStyle="friendListCard"
                                             friends={this.state.user_profile.friendList}/>
                             </Col>
                         </Row>
@@ -176,7 +152,4 @@ class ProfilePage extends Component {
             </>
         )
     }
-
 }
-
-export default ProfilePage

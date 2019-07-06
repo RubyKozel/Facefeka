@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Post from "./Post";
 
-class PostList extends Component {
+export default class PostList extends Component {
     constructor(props) {
         super(props);
         this.onDeletePost = props.onDeletePost;
@@ -33,5 +33,3 @@ class PostList extends Component {
         return <div>{this.state.posts}</div>;
     }
 }
-
-export default PostList;

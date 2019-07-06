@@ -1,14 +1,13 @@
 import React, {Component} from 'react';
-import {Col, Container, Image, Row, Form, Card, Spinner} from "react-bootstrap";
+import {Col, Container, Image, Row, Card, Spinner} from "react-bootstrap";
 import {MDBIcon, MDBInput} from 'mdbreact';
-
 import properties from "../../../websiteUtils/properties.json";
+import GeneralDialog from "./GeneralDialog";
+import {POST_AUTH, POST_FORM_DATA_AUTH} from '../utils/requests.js';
 
 const {base_url, routes} = properties;
 
-import GeneralDialog from "./GeneralDialog";
-
-class NewComment extends Component {
+export default class NewComment extends Component {
     constructor(props) {
         super(props);
         this.profilePic = props.profilePic;
@@ -35,16 +34,7 @@ class NewComment extends Component {
                 profile_pic: this.profile_pic,
                 text: this.state.text
             };
-            const response = await fetch(`${base_url}${routes.comment_post_by_id}`.replace(':id', this.id), {
-                method: 'POST',
-                mode: 'cors',
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json",
-                    'x-auth': localStorage.getItem('x-auth')
-                }
-            });
-
+            const response = await POST_AUTH(`${base_url}${routes.comment_post_by_id}`.replace(':id', this.id), data);
             if (response.status && response.status === 200) {
                 const post = await response.json();
                 if (this.state.pictures.length > 0) {
@@ -52,15 +42,8 @@ class NewComment extends Component {
                     const formData = new FormData();
                     this.state.pictures.forEach((file, i) => formData.append(`${i}`, file));
 
-                    const response = await fetch(`${base_url}${routes.upload_images_to_post_by_id}`.replace(':id', post_id), {
-                        method: 'POST',
-                        mode: 'cors',
-                        body: formData,
-                        headers: {
-                            'x-auth': localStorage.getItem('x-auth')
-                        }
-                    });
-
+                    const response = await POST_FORM_DATA_AUTH(
+                        `${base_url}${routes.upload_images_to_post_by_id}`.replace(':id', post_id), formData);
                     if (!(response.status && response.status === 200)) {
                         this.setState({error: true, publishing: false});
                         return Promise.reject();
@@ -87,8 +70,8 @@ class NewComment extends Component {
         for (const file of files) {
             const reader = new FileReader();
             reader.onload = e => {
-                imagePreview.push(<Card.Img style={{width: '18%', height: '18%', margin: '1rem'}} tag="a"
-                                            variant="bottom" src={e.target.result}/>);
+                imagePreview.push(
+                    <Card.Img className="commentImagePreview" tag="a" variant="bottom" src={e.target.result}/>);
                 this.setState({imagePreview, pictures: files}, () => this.setState(this.state));
             };
             reader.readAsDataURL(file);
@@ -99,15 +82,16 @@ class NewComment extends Component {
         const preview = () => this.state.imagePreview.length > 0 ?
             <Row className="preview">{this.state.imagePreview}</Row> : <></>;
         const error = () => this.state.error ?
-            <GeneralDialog title="Error!" text="Opps! there was an error in your last action..."
+            <GeneralDialog title="Error!"
+                           text="Opps! there was an error in your last action..."
                            onClose={() => this.setState({error: false})}/> : <></>;
 
         return (
             <Container>
                 {error()}
-                <Row style={{'margin-bottom': '1rem'}}>
+                <Row className="smallMarginBottom">
                     <Col>
-                        <Image style={{width: "100%"}} src={this.profilePic} roundedCircle/>
+                        <Image className="newCommentImageSize" src={this.profilePic} roundedCircle/>
                     </Col>
                     <Col md="9">
                         <MDBInput
@@ -121,7 +105,7 @@ class NewComment extends Component {
                         <MDBIcon onClick={this.state.publishing ? null : () => $('#upload_images_comment').click()}
                                  className="uploadImageIconComment"
                                  far icon="image" size="3x"/>
-                        <input id="upload_images_comment" type="file" style={{display: "none"}} alt=""
+                        <input className="noDisplay" id="upload_images_comment" type="file" alt=""
                                onChange={(e) => this.showImagePreview(e)} multiple/>
                     </Col>
                 </Row>
@@ -130,5 +114,3 @@ class NewComment extends Component {
         )
     }
 }
-
-export default NewComment;

@@ -1,14 +1,13 @@
 import React, {Component} from 'react';
 import {Card, Col, Dropdown, DropdownItem, FormControl, Image, NavDropdown, Row} from 'react-bootstrap';
 import {MDBIcon} from "mdbreact";
+import {POST_AUTH, GET_AUTH} from '../utils/requests.js';
 import properties from "../../../websiteUtils/properties.json";
-
-const base_url = properties.base_url;
-const routes = properties.routes;
-
 import GeneralDialog from "./GeneralDialog";
 
-class DropdownInput extends Component {
+const {base_url, routes} = properties;
+
+export default class DropdownInput extends Component {
     constructor(props) {
         super(props);
         this.friends = props.friends;
@@ -31,14 +30,7 @@ class DropdownInput extends Component {
     }
 
     async addFriend(id) {
-        const response = await fetch(`${base_url}${routes.add_friend_by_id}`.replace(':id', id), {
-            method: 'POST',
-            mode: 'cors',
-            headers: {
-                "Content-Type": "application/json",
-                'x-auth': localStorage.getItem('x-auth')
-            }
-        });
+        const response = await POST_AUTH(`${base_url}${routes.add_friend_by_id}`.replace(':id', id));
 
         if (response.status && response.status === 200) {
             this.friends.push(id);
@@ -56,20 +48,51 @@ class DropdownInput extends Component {
     }
 
     static async getUser(id) {
-        const response = await fetch(`${base_url}${routes.get_user_by_id}`.replace(':id', id), {
-            method: 'GET',
-            mode: 'cors',
-            headers: {
-                "Content-Type": "application/json",
-                'x-auth': localStorage.getItem('x-auth')
-            }
-        });
+        const response = await GET_AUTH(`${base_url}${routes.get_user_by_id}`.replace(':id', id));
+        return response.status && response.status === 200 ? await response.json() : Promise.reject();
+    }
 
-        if (response.status && response.status === 200) {
-            return await response.json();
-        } else {
-            return Promise.reject();
-        }
+    getFriendListForDropDown(value) {
+        const onFriendClicked = (user) => {
+            DropdownInput.getUser(user._id).then((user) => {
+                localStorage.setItem('user_profile', JSON.stringify({user_profile: user}));
+                window.location.href = 'profile.html';
+            });
+        };
+
+        const onAddFriendClicked = (user) => {
+            this.addFriend(user._id).then(() => {
+                $('.dropdown-menu').removeClass('show');
+                this.setState({value: ""});
+            })
+        };
+
+        const addFriendIcon = (user) => {
+            return !this.friends.includes(user._id) ?
+                <MDBIcon className="addFriendIcon" onClick={() => onAddFriendClicked(user)} icon="user-plus"/> :
+                <></>;
+        };
+
+        return this.state.options
+            .filter(user => value === "*" ? true : user.name.toLowerCase().startsWith(value.toLowerCase()))
+            .map(user =>
+                <>
+                    <DropdownItem>
+                        <Card.Body className="noMargin noPadding" onClick={() => onFriendClicked(user)}>
+                            <Row>
+                                <Col>
+                                    <Image className="dropDownMenuProfileImage" src={user.profile_pic} roundedCircle/>
+                                </Col>
+                                <Col md="5">
+                                    <Card.Subtitle className="customFriendSearchSubtitle">{user.name}</Card.Subtitle>
+                                </Col>
+                                {addFriendIcon(user)}
+                            </Row>
+                        </Card.Body>
+                    </DropdownItem>
+                    <NavDropdown.Divider className="noMargin"/>
+                </>
+            )
     }
 
     render() {
@@ -86,41 +109,9 @@ class DropdownInput extends Component {
                         onChange={this.handleChange.bind(this)}
                         value={value}
                     />
-                    <Dropdown.Menu style={{width: '200%', margin: '0 0 0 -16.4rem'}}>
-                        <ul className="list-unstyled" style={{margin: "unset"}}>{
-                            this.state.options.filter(user => value === "*" ? true : user.name.toLowerCase().startsWith(value.toLowerCase())).map(user =>
-                                <>
-                                    <DropdownItem>
-                                        <Card.Body onClick={() => {
-                                            DropdownInput.getUser(user._id).then((user) => {
-                                                localStorage.setItem('user_profile', JSON.stringify({user_profile: user}));
-                                                window.location.href = 'profile.html';
-                                            });
-                                        }} style={{margin: 'unset', padding: 'unset'}}>
-                                            <Row>
-                                                <Col>
-                                                    <Image style={{padding: '0.5rem', width: '20%'}}
-                                                           src={user.profile_pic}
-                                                           roundedCircle/>
-                                                </Col>
-                                                <Col md="5">
-                                                    <Card.Subtitle
-                                                        className="customFriendSearchSubtitle">{user.name}</Card.Subtitle>
-                                                </Col>
-                                                {!this.friends.includes(user._id) ?
-                                                    <MDBIcon
-                                                        onClick={() => this.addFriend(user._id).then(() => {
-                                                            $('.dropdown-menu').removeClass('show');
-                                                            this.setState({value: ""});
-                                                        })}
-                                                        icon="user-plus"
-                                                        style={{cursor: 'pointer', margin: "15px 10px 0 0"}}/> : <></>}
-                                            </Row>
-                                        </Card.Body>
-                                    </DropdownItem>
-                                    <NavDropdown.Divider style={{margin: 'unset'}}/>
-                                </>
-                            )}
+                    <Dropdown.Menu className="dropdownMenuSizing">
+                        <ul className="list-unstyled noMargin">
+                            {this.getFriendListForDropDown(value)}
                         </ul>
                     </Dropdown.Menu>
                 </Dropdown>
@@ -128,5 +119,3 @@ class DropdownInput extends Component {
         )
     }
 }
-
-export default DropdownInput;
