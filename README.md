@@ -23,7 +23,7 @@ You have two options to run mongoDB:
 	2. Second one is to use mongoDB cloud. 
 		1. In order to do so, please register to mongoDB cloud in https://cloud.mongodb.com. 
 		2. After your register to the cloud, you should define a user name and a password to be used in the cluster.
-	  	3. When you have defined a user, you need to adjust some things in the code.
+		3. When you have defined a user, you need to adjust some things in the code.
 	  		1. In the mongodb cloud cluster cockpit, select the ‘connect’ button and then ‘connect your application'.
 			It should provide you with a url to use to connect to the cloud cluster.
 			2. Put your username and password in the relevant places and copy the link.
@@ -35,11 +35,13 @@ You have two options to run mongoDB:
 			```
 	  		4. In package.json file, in your start script, change ‘development’ to ‘production’ in all places,
 			if production is not already set.
+			
 			 ```
 	  		"script" {
 	  			"start": "npm run build && export NODE_ENV=production || SET \"NODE_ENV=production\" && node website/server/server.js"
 	  		}
 	  		```
+			
 5. In order to use cloudinary, please register to the cloudinary website at https://cloudinary.com/.
    After the registration completes, you should be provided with three secrets: cloud name, api_key and api_secret. 
    All three should be inserted in the relevant places in Config.json file, for example:
