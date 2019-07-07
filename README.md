@@ -16,19 +16,24 @@ The main features of the website are:
 3. Write posts that contain text and multiple images
 4. Comment on posts, with text and multiple images
 5. Like/Dislike posts (no duplicate like is allowed)
-6. Search for users
-7. Invite friends via the search function (Inviting a friend doesn't involve a friend request. It immediatelly adds the friend to your friend list, as well as adding yourself to the friends' friend list)
-8. Invite friends to a match in the browser game
-9. Change profile picture
-10. Change Theme picture (in the profile page)
-11. See your profile page and your friends profile page
+6. Delete Posts
+7. Change privacy of posts
+8. Search for users
+9. Invite friends via the search function (Inviting a friend doesn't involve a friend request. It immediatelly adds the friend to your friend list, as well as adding yourself to the friends' friend list)
+10. Invite friends to a match in the browser game
+11. Change profile picture
+12. Change Theme picture (in the profile page)
+13. See your profile page and your friends profile page
 
 ![picture alt](https://lh6.googleusercontent.com/uXeRD0FzYjL8bsyrBfNpf_SbXahr51D7KwYRF0bW3eHoHHyyPtPgwuO2EAGUowG8fDVsS_NaJi4dSZcLSXTSe8bq56Z-QTr2SrKu3WoXNpBOpN17x9k9A-TKsODu544UHD3zG2No7qE "Facefeka main page")
+
+![picture alt](https://lh4.googleusercontent.com/NhURV0D0ko8CvFaQab1q6i6kyeA2KQiIBNsP94HLAEOc5Gneb-Cn2oEPDRi4dCtarv_ibRPmvXZWjtGDKdQLXXzGMXBeExb-42q5jDOFozVMxgKRUVL7bQMYfDvCwzqvUYvyQHPb5eo "Create posts and comment them")
 
 ## Facefeka browser game ##
 
 The Facefeka game is a simple 2D Pong Ball game. The main goal of each player is to bounce the ball from their side to the opponents side. The first player that misses the ball, loses the game. The winner is gained a point and it is saved in the database. The score of the winning player is presented at the end of the game.
 
+![picture alt](https://lh3.googleusercontent.com/kOkasij5YCFZQbBovfX-VyybSWFG6An74KytzoHAagEC94rJ-U1xTu__H80ebJmUmln76Efo15lB7_Ea0JicS8IXy6feTwX-ga_0gt7gaQvQaCxVULbuDiAHUfbsab7u7qpydNOB9tY)
 
 ## Installation Guide ##
 
