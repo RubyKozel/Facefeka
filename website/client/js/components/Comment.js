@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Card, Col, Image, Row} from 'react-bootstrap'
 import ImagePopup from "./ImagePopup";
 import getFormattedDate from "../utils/timeFormatter";
+import {PicturesPane} from "./ViewComponents";
 
 export default class Comment extends Component {
     constructor(props) {
@@ -11,31 +12,11 @@ export default class Comment extends Component {
         this.state = {popUp: null};
     }
 
-    pictures() {
-        return this.data.pictures && this.data.pictures.length > 0 ?
-            <Row>{
-                this.data.pictures.map(picture =>
-                    <Card.Img
-                        onClick={() => this.setState({popUp: picture})}
-                        className="commentImage"
-                        tag="a"
-                        variant="bottom"
-                        src={picture}
-                    />)}
-            </Row> :
-            <></>;
-    };
-
     render() {
-        const popUpImage = () => {
-            return this.state.popUp ?
-                <ImagePopup src={this.state.popUp} close={() => this.setState({popUp: null})}/> :
-                <></>
-        };
-
         return (
             <>
-                {popUpImage()}
+                <ImagePopup show={this.state.popUp !== null} src={this.state.popUp}
+                            close={() => this.setState({popUp: null})}/>
                 <Card className="smallMarginTop">
                     <Row>
                         <Col>
@@ -49,7 +30,7 @@ export default class Comment extends Component {
                     <Row>
                         <Card.Body className="comment">{this.data.text}</Card.Body>
                     </Row>
-                    {this.pictures()}
+                    <PicturesPane data={this.data.pictures} className="commentImage" that={this}/>
                 </Card>
             </>
         );

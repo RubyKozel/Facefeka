@@ -14,8 +14,8 @@ export default class DropdownInput extends Component {
         this.state = {
             options: props.options,
             value: '',
-            error: <></>,
-            success: <></>
+            error: false,
+            success: false
         };
     }
 
@@ -23,26 +23,17 @@ export default class DropdownInput extends Component {
         const menu = $('.dropdown-menu');
         this.setState({value: e.target.value},
             () => {
-                this.state.value.length > 0 ?
-                    menu.addClass('show') :
-                    menu.removeClass('show')
+                this.state.value.length > 0 ? menu.addClass('show') : menu.removeClass('show')
             });
     }
 
     async addFriend(id) {
         const response = await POST_AUTH(`${base_url}${routes.add_friend_by_id}`.replace(':id', id));
-
         if (response.status && response.status === 200) {
             this.friends.push(id);
-            this.setState({
-                success: <GeneralDialog title="Friend was added" text="You've added a friend successfully!"
-                                        onClose={() => this.setState({success: <></>})}/>
-            })
+            this.setState({success: true})
         } else {
-            this.setState({
-                error: <GeneralDialog title="Error!" text="Oops! Adding your friend didn't quite work..."
-                                      onClose={() => this.setState({error: <></>})}/>
-            })
+            this.setState({error: true})
         }
         $('.dropdown-menu').removeClass('show');
     }
@@ -96,22 +87,24 @@ export default class DropdownInput extends Component {
     }
 
     render() {
-        const {value} = this.state;
-
         return (
             <>
-                {this.state.error}
-                {this.state.success}
+                <GeneralDialog show={this.state.error} title="Error!"
+                               text="Oops! Adding your friend didn't quite work..."
+                               onClose={() => this.setState({error: false})}/>
+                <GeneralDialog show={this.state.success} title="Friend was added"
+                               text="You've added a friend successfully!"
+                               onClose={() => this.setState({success: false})}/>
                 <Dropdown>
                     <FormControl
                         className="mx-3 my-2 w-auto"
                         placeholder="Search..."
                         onChange={this.handleChange.bind(this)}
-                        value={value}
+                        value={this.state.value}
                     />
                     <Dropdown.Menu className="dropdownMenuSizing">
                         <ul className="list-unstyled noMargin">
-                            {this.getFriendListForDropDown(value)}
+                            {this.getFriendListForDropDown(this.state.value)}
                         </ul>
                     </Dropdown.Menu>
                 </Dropdown>

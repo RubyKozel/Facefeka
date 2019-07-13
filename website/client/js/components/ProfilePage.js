@@ -5,11 +5,11 @@ import GeneralDialog from "./GeneralDialog";
 import ProfileCard from "./ProfileCard";
 import {fetchUser} from "../utils/fetch_user";
 import NewPost from "./NewPost";
-import PostList from "./PostList";
 import properties from "../../../websiteUtils/properties.json";
 import Spinner from "react-bootstrap/Spinner";
 import FriendList from "./FriendList";
 import {GET_AUTH, POST_FORM_DATA_AUTH} from '../utils/requests.js';
+import Post from "./Post";
 
 const {base_url, routes} = properties;
 
@@ -88,16 +88,25 @@ export default class ProfilePage extends Component {
     }
 
     render() {
-        const error = () => this.state.error ?
-            <GeneralDialog title="Error!"
-                           text="Opps! there was an error in your last action..."
-                           onClose={() => this.setState({error: false})}/> : <></>;
         const spinner = () => this.state.uploading ?
             <Spinner className="profilePageUploadSpinner" animation="border" variant="primary"/> : <></>;
 
+        const buildPostListJSX = () => {
+            const {_id, name, profile_pic} = this.state.user;
+            return this.state.postList.map(post =>
+                <Post
+                    onDeletePost={this.refreshPosts.bind(this)}
+                    post_id={post._id}
+                    key={post._id}
+                    current_user={{_id, name, profile_pic}}
+                    post={post}/>)
+        };
+
         return (
             <>
-                {error()}
+                <GeneralDialog show={this.state.error} title="Error!"
+                               text="Opps! there was an error in your last action..."
+                               onClose={() => this.setState({error: false})}/>
                 <Container>
                     <Header user_id={this.state.user._id}
                             name={this.state.user.name}
@@ -133,12 +142,7 @@ export default class ProfilePage extends Component {
                                     onNewPost={(c) => this.refreshPosts(c)}/>
                                 {this.state.loading ?
                                     <Spinner animation="border" className="profilePagePostsSpinner"/> : <></>}
-                                <PostList
-                                    onDeletePost={this.refreshPosts.bind(this)}
-                                    user_id={this.state.user._id}
-                                    user_name={this.state.user.name}
-                                    user_profile_pic={this.state.user.profile_pic}
-                                    posts={this.state.postList}/>
+                                {buildPostListJSX()}
                             </Col>
                             <Col>
                                 <FriendList user={this.state.user}

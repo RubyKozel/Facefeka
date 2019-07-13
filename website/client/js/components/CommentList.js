@@ -61,12 +61,11 @@ export default class CommentList extends Component {
     }
 
     render() {
-        const error = () => this.state.error ?
-            <GeneralDialog title="Error!" text="Opps! there was an error in your last action..."
-                           onClose={() => this.setState({error: false})}/> : <></>;
         return (
             <>
-                {error()}
+                <GeneralDialog show={this.state.error} title="Error!"
+                               text="Opps! there was an error in your last action..."
+                               onClose={() => this.setState({error: false})}/>
                 <NewComment
                     creator={this._creator}
                     id={this.id}

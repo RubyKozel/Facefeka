@@ -81,14 +81,12 @@ export default class NewComment extends Component {
     render() {
         const preview = () => this.state.imagePreview.length > 0 ?
             <Row className="preview">{this.state.imagePreview}</Row> : <></>;
-        const error = () => this.state.error ?
-            <GeneralDialog title="Error!"
-                           text="Opps! there was an error in your last action..."
-                           onClose={() => this.setState({error: false})}/> : <></>;
 
         return (
             <Container>
-                {error()}
+                <GeneralDialog show={this.state.error} title="Error!"
+                               text="Opps! there was an error in your last action..."
+                               onClose={() => this.setState({error: false})}/>
                 <Row className="smallMarginBottom">
                     <Col>
                         <Image className="newCommentImageSize" src={this.profilePic} roundedCircle/>

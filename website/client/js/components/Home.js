@@ -1,15 +1,15 @@
 import React, {Component} from "react";
 import Header from "./Header";
 import NewPost from "./NewPost";
-import PostList from "./PostList";
 import properties from '../../../websiteUtils/properties.json';
-import {Col, Container, Row} from "react-bootstrap";
 import ProfileCard from "./ProfileCard";
 import GeneralDialog from "./GeneralDialog";
 import FriendList from "./FriendList";
-import {fetchUser} from '../utils/fetch_user.js';
 import Spinner from "react-bootstrap/Spinner";
+import {fetchUser} from '../utils/fetch_user.js';
+import {LeftPane, Page} from "./ViewComponents";
 import {GET_AUTH} from '../utils/requests.js';
+import Post from "./Post";
 
 const {base_url, routes} = properties;
 
@@ -65,7 +65,6 @@ export default class Home extends Component {
 
             this.allPosts = myposts.concat(friend_posts).sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
             const currIndex = this.state.currIndex + 8;
-            console.log(currIndex);
             this.setState({currIndex, postList: that.allPosts.slice(0, currIndex)});
         } else {
             this.setState({error: true});
@@ -75,52 +74,49 @@ export default class Home extends Component {
 
     refreshPosts(callback) {
         this.setState({currIndex: 0, loading: true});
-        this.getPostList()
-            .then(() => this.setState({loading: false}))
-            .catch(console.log);
+        this.getPostList().then(() => this.setState({loading: false})).catch(console.log);
         if (callback) callback();
     }
 
     render() {
-        const error = () => this.state.error ?
-            <GeneralDialog title="Error!"
-                           text="Opps! there was an error in your last action..."
-                           onClose={() => this.setState({error: false})}/> : <></>;
+        const buildPostListJSX = () => {
+            const {_id, name, profile_pic} = this.state.user;
+            return this.state.postList.map(post =>
+                <Post
+                    onDeletePost={this.refreshPosts.bind(this)}
+                    post_id={post._id}
+                    key={post._id}
+                    current_user={{_id, name, profile_pic}}
+                    post={post}/>)
+        };
+
         return (
-            <Container>
-                {error()}
-                <Header user_id={this.state.user._id} name={this.state.user.name} friends={this.state.user.friendList}/>
-                <Row>
-                    <Col sm="4">
-                        <Row>
-                            <ProfileCard canChange={true}
-                                         cardClassName="profileCardMargin"
-                                         name={this.state.user.name}
-                                         profilePic={this.state.user.profile_pic}
-                                         onPictureUploaded={() => fetchUser().then(user => this.setState({user}))}/>
-                        </Row>
-                        <Row>
-                            <FriendList user={this.state.user}
-                                        cardStyle="friendListCard friendListCardHome"
-                                        friends={this.state.user.friendList}/>
-                        </Row>
-                    </Col>
-                    <Col sm="4">
-                        <NewPost
-                            name={this.state.user.name}
-                            profile_pic={this.state.user.profile_pic}
-                            creator={this.state.user._id}
-                            onNewPost={(c) => this.refreshPosts(c)}/>
-                        {this.state.loading ? <Spinner animation="border" className="homeSpinner"/> : <></>}
-                        <PostList
-                            onDeletePost={this.refreshPosts.bind(this)}
-                            user_id={this.state.user._id}
-                            user_name={this.state.user.name}
-                            user_profile_pic={this.state.user.profile_pic}
-                            posts={this.state.postList}/>
-                    </Col>
-                </Row>
-            </Container>
+            <Page>
+                <GeneralDialog show={this.state.error} title="Error!"
+                               text="Opps! there was an error in your last action..."
+                               onClose={() => this.setState({error: false})}/>
+                <Header user_id={this.state.user._id} name={this.state.user.name}
+                        friends={this.state.user.friendList}/>
+                <LeftPane>
+                    <ProfileCard canChange={true}
+                                 cardClassName="profileCardMargin"
+                                 name={this.state.user.name}
+                                 profilePic={this.state.user.profile_pic}
+                                 onPictureUploaded={() => fetchUser().then(user => this.setState({user}))}/>
+                    <FriendList user={this.state.user}
+                                cardStyle="friendListCard friendListCardHome"
+                                friends={this.state.user.friendList}/>
+                </LeftPane>
+                <div id="PostList">
+                    <NewPost
+                        name={this.state.user.name}
+                        profile_pic={this.state.user.profile_pic}
+                        creator={this.state.user._id}
+                        onNewPost={(c) => this.refreshPosts(c)}/>
+                    {this.state.loading ? <Spinner animation="border" className="homeSpinner"/> : <></>}
+                    {buildPostListJSX()}
+                </div>
+            </Page>
         )
     }
 }

@@ -79,13 +79,11 @@ export default class NewPost extends Component {
     render() {
         const preview = () => this.state.imagePreview.length > 0 ?
             <Card.Body className="preview">{this.state.imagePreview}</Card.Body> : <></>;
-        const error = () => this.state.error ?
-            <GeneralDialog title="Error!"
-                           text="Opps! there was an error in your last action..."
-                           onClose={() => this.setState({error: false})}/> : <></>;
         return (
             <>
-                {error()}
+                <GeneralDialog show={this.state.error} title="Error!"
+                               text="Opps! there was an error in your last action..."
+                               onClose={() => this.setState({error: false})}/>
                 <Card className="post">
                     <Card.Header> Write new post </Card.Header>
                     <Card.Body>

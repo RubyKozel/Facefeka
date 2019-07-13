@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Card, Col, Image, Row, NavDropdown, Dropdown, Overlay, OverlayTrigger, Tooltip} from "react-bootstrap";
+import {Card, Col, Image, Row, NavDropdown, Dropdown, OverlayTrigger, Tooltip} from "react-bootstrap";
 import CommentList from './CommentList'
 import {MDBIcon} from 'mdbreact'
 import GeneralDialog from './GeneralDialog';
@@ -7,6 +7,7 @@ import ImagePopup from './ImagePopup';
 import getFormattedDate from '../utils/timeFormatter.js';
 import properties from "../../../websiteUtils/properties.json";
 import {POST_AUTH, DELETE} from '../utils/requests.js';
+import {PicturesPane} from "./ViewComponents";
 
 const {base_url, routes} = properties;
 
@@ -27,7 +28,7 @@ export default class Post extends Component {
             error: false,
             popUp: null,
             privacy: props.post.privacy,
-            postDeleteDialog: <></>
+            postDeleteDialog: false
         }
     }
 
@@ -72,14 +73,8 @@ export default class Post extends Component {
 
     async deletePost() {
         const response = await DELETE(`${base_url}${routes.delete_post_by_id}`.replace(':id', this.data._id));
-
         if (response.status && response.status === 200) {
-            this.setState({
-                postDeleteDialog:
-                    <GeneralDialog title="Post deleted"
-                                   text="Your post has been deleted successfully"
-                                   onClose={() => this.setState({postDeleteDialog: <></>}, this.onDeletePost)}/>
-            });
+            this.setState({postDeleteDialog: true});
         } else {
             return Promise.reject();
         }
@@ -97,26 +92,15 @@ export default class Post extends Component {
 
     render() {
         const pictures = () => {
-            if (this.data.pictures && this.data.pictures.length > 0) {
-                const length = this.data.pictures.length;
-                const width = length === 1 ? '100%' : length === 2 || length === 4 ? '50%' : '33.3333%';
-                return (
-                    <Card.Body>{this.data.pictures.map(picture =>
-                        <Card.Img onClick={() => this.setState({popUp: picture})}
-                                  style={{width}}
-                                  className="clickable"
-                                  tag="a"
-                                  variant="bottom"
-                                  src={picture}
-                        />)}
-                    </Card.Body>
-                )
-            }
-            return <></>;
+            const length = this.data.pictures.length;
+            const width = length === 1 ? '100%' : length === 2 || length === 4 ? '50%' : '33.3333%';
+            return <PicturesPane data={this.data.pictures} width={width} className="clickable" that={this}/>;
         };
+
         const likeIconClass = () => this.data.likes.includes(this.current_user._id) ?
             `indigo-text pr-3 iconButtonClicked ${this.post_id}` :
             `indigo-text pr-3 iconButton ${this.post_id}`;
+
         const dropDownMenu = () => this.data._creator === this.current_user._id ?
             <div className="customHamburgerIcon">
                 <Dropdown>
@@ -140,12 +124,14 @@ export default class Post extends Component {
 
         return (
             <>
-                {this.state.error ? <GeneralDialog title="Error!"
-                                                   text="Opps! there was an error in your last action..."
-                                                   onClose={() => this.setState({error: false})}/> : <></>}
-                {this.state.popUp ?
-                    <ImagePopup src={this.state.popUp} close={() => this.setState({popUp: null})}/> : <></>}
-                {this.state.postDeleteDialog}
+                <GeneralDialog show={this.state.error} title="Error!"
+                               text="Opps! there was an error in your last action..."
+                               onClose={() => this.setState({error: false})}/>
+                <ImagePopup show={this.state.popUp !== null} src={this.state.popUp}
+                            close={() => this.setState({popUp: null})}/>
+                <GeneralDialog show={this.state.postDeleteDialog} title="Post deleted"
+                               text="Your post has been deleted successfully"
+                               onClose={() => this.setState({postDeleteDialog: false}, this.onDeletePost)}/>
                 <Card className="post">
                     <Card.Body>
                         <Row>

@@ -58,13 +58,11 @@ export default class ProfileCard extends Component {
             }
         };
 
-        const error = () => this.state.error ?
-            <GeneralDialog title="Error!" text="Opps! there was an error in your last action..."
-                           onClose={() => this.setState({error: false})}/> : <></>;
-
         return (
             <>
-                {error()}
+                <GeneralDialog show={this.state.error} title="Error!"
+                               text="Opps! there was an error in your last action..."
+                               onClose={() => this.setState({error: false})}/>
                 <Card className={`text-center ${this.cardClassName}`}>
                     {content()}
                     <input className="noDisplay" id="image_upload" type="file" alt=""

@@ -6,7 +6,12 @@ export default class ImagePopup extends Component {
         super(props);
         this.src = props.src;
         this.close = props.close;
-        this.state = {show: true};
+        this.state = {show: props.show};
+    }
+
+    componentWillReceiveProps(props, context) {
+        this.src = props.src;
+        this.setState({show: props.show});
     }
 
     onHideClicked() {

@@ -18,39 +18,12 @@ export default class FriendList extends Component {
         this.fromProfile = props.fromProfile;
         this.state = {
             users: [],
-            error: <></>,
-            invitePopUp: <></>
+            error: false,
+            invitePopUp: false
         };
-        this.getAllFriends()
-            .then((users) => this.setState({users}))
-            .catch(() => this.setState({
-                error: <GeneralDialog title="Error!"
-                                      text="Oops! We couldn't get your friends..."
-                                      onClose={() => this.setState({error: <></>})}/>
-            }));
-
-        setUpdateFunction(() => {
-            const onInvitePopupClosed = () => {
-                localStorage.setItem('name', this.user.name);
-                localStorage.setItem('action', 'subscribe');
-                window.open('http://localhost:3000/facefeka/game/Game.html');
-                this.setState({invitePopUp: <></>});
-            };
-
-            this.setState({
-                invitePopUp: <GeneralDialog title="Join a game"
-                                            text="Your friend has invited you to a game!"
-                                            onClose={onInvitePopupClosed}/>
-            });
-        });
-
-        setErrorFunction(() => {
-            this.setState({
-                error: <GeneralDialog title="Error!"
-                                      text="Oops! We couldn't get you into the game..."
-                                      onClose={() => this.setState({error: <></>})}/>
-            })
-        })
+        this.getAllFriends().then((users) => this.setState({users})).catch(() => this.setState({error: true}));
+        setUpdateFunction(() => this.setState({invitePopUp: true}));
+        setErrorFunction(() => this.setState({error: true}))
     }
 
     async getAllFriends() {
@@ -87,10 +60,21 @@ export default class FriendList extends Component {
                         </Media>
                     </>);
 
+        const onInvitePopupClosed = () => {
+            localStorage.setItem('name', this.user.name);
+            localStorage.setItem('action', 'subscribe');
+            window.open('http://localhost:3000/facefeka/game/Game.html');
+            this.setState({invitePopUp: false});
+        };
+
         return (
             <>
-                {this.state.invitePopUp}
-                {this.state.error}
+                <GeneralDialog show={this.state.invitePopUp} title="Join a game"
+                               text="Your friend has invited you to a game!"
+                               onClose={onInvitePopupClosed}/>
+                <GeneralDialog show={this.state.error} title="Error!"
+                               text="Oops! There was an error in your last action..."
+                               onClose={() => this.setState({error: false})}/>
                 {this.state.users.length > 0 ?
                     <Card className={this.cardStyle}>
                         <Card.Title className="smallMargin">Friend List</Card.Title>

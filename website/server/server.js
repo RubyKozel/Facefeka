@@ -168,7 +168,7 @@ app.post(routes.add_score_by_id, authenticate, async (req, res) => {
     const id = req.user._id;
     try {
         const score = await Scores.findOne({userId: id});
-        if(score){
+        if (score) {
             await Scores.updateOne({userId: id}, {$inc: {score: 1}}, {new: true});
             res.status(200).send({score: score.score + 1});
         } else {
@@ -248,25 +248,24 @@ app.get(routes.get_all_posts_by_id, validate, async (req, res) => {
 
 app.post(routes.comment_post_by_id, validate, async (req, res) => {
     const {text, pictures, privacy, _creator, name, profile_pic} = req.body;
-    const newPost = new Post({
+    const comment = new Post({
         text, privacy, _creator, name, profile_pic,
         pictures: pictures ? pictures : [],
         is_comment: true
 
     });
 
-    await newPost.save();
-
-    let post = await Post.findOne({_id: req.params.id});
-    if (post) {
-        try {
-            await post.addComment(newPost._id);
-            res.status(200).send(newPost);
-        } catch (e) {
-            res.status(404).send({message: "Couldn't find post"});
+    try {
+        await comment.save();
+        let post = await Post.findOne({_id: req.params.id});
+        if (post) {
+            await post.addComment(comment._id);
+            res.status(200).send(comment);
+        } else {
+            res.status(404).send({message: "Couldn't find post"})
         }
-    } else {
-        res.status(404).send({message: "Couldn't find post"});
+    } catch (e) {
+        res.status(400).send(e);
     }
 });
 

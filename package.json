@@ -6,7 +6,7 @@
   "scripts": {
     "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && mocha --timeout 10000 server/**/*.test.js",
     "test-watch": "nodemon --exec \"npm test\"",
-    "build": "webpack -p --progress --colors --config webpack.config.js",
+    "build": "webpack -p --progress --colors --devtool source-map --config webpack.config.js",
     "start": "npm run build && export NODE_ENV=production || SET \"NODE_ENV=production\" && node website/server/server.js"
   },
   "dependencies": {
@@ -42,5 +42,8 @@
     "ws": "^7.0.1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "uglifyjs-webpack-plugin": "^2.1.3"
+  }
 }

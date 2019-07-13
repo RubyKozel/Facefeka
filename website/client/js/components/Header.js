@@ -71,10 +71,9 @@ export default class Header extends Component {
         this.setTimeOut();
         return (
             <>
-                {this.state.showDialog ?
-                    <GeneralDialog title="Token expired"
-                                   text="Your token has expired, you should log in again"
-                                   onClose={() => window.location.href = '/facefeka'}/> : <></>}
+                <GeneralDialog show={this.state.showDialog} title="Token expired"
+                               text="Your token has expired, you should log in again"
+                               onClose={() => window.location.href = '/facefeka'}/>
                 <Navbar id="navbar" bg="primary" variant="dark">
                     <Navbar.Brand href="front.html">Facefeka</Navbar.Brand>
                     <Nav className="mr-auto">
