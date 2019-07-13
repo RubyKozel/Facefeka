@@ -1,0 +1,25 @@
+{
+  "test": {
+    "PORT": 3000,
+    "MONGODB_URI": "mongodb://localhost:27017/FaceFekaTest",
+    "JWT_SECRET": "READ README",
+    "CLOUD_NAME": "READ README",
+    "API_KEY": "READ README",
+    "API_SECRET": "READ README"
+  },
+  "development": {
+    "PORT": 3000,
+    "MONGODB_URI": "mongodb://localhost:27017/FaceFeka",
+    "JWT_SECRET": "READ README",
+    "CLOUD_NAME": "READ README",
+    "API_KEY": "READ README",
+    "API_SECRET": "READ README"
+  },
+  "production": {
+    "MONGODB_URI": "READ README",
+    "JWT_SECRET": "READ README",
+    "CLOUD_NAME": "READ README",
+    "API_KEY": "READ README",
+    "API_SECRET": "READ README"
+  }
+}
