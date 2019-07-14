@@ -7,10 +7,11 @@
     "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && mocha --timeout 10000 server/**/*.test.js",
     "test-watch": "nodemon --exec \"npm test\"",
     "build": "webpack -p --progress --colors --devtool source-map --config webpack.config.js",
-    "start-game-server": "php game/server/server.php",
+    "start-game-server": "npm run export-php-port && php \"./game/server/server.php\"",
+    "export-php-port": "export PHP_PORT=4000 || SET \"PHP_PORT=4000\"",
     "export-port": "export NODE_ENV=production || SET \"NODE_ENV=production\"",
     "start-node-server": "npm run build && npm run export-port && node website/server/server.js",
-    "start": "concurrently \"npm run start-game-server\" \"npm run start-node-server\""
+    "start": "concurrently \"npm run start-node-server\" \"npm run start-game-server\""
   },
   "dependencies": {
     "@babel/core": "^7.5.4",
