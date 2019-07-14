@@ -1,1 +1,0 @@
-worker:concurrently "npm run start-game-server" "npm run start-node-server"
