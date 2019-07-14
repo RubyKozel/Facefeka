@@ -7,7 +7,10 @@
     "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && mocha --timeout 10000 server/**/*.test.js",
     "test-watch": "nodemon --exec \"npm test\"",
     "build": "webpack -p --progress --colors --devtool source-map --config webpack.config.js",
-    "start": "npm run build && export NODE_ENV=production || SET \"NODE_ENV=production\" && node website/server/server.js"
+    "start-game-server": "php game/server/server.php",
+    "export-port": "export NODE_ENV=production || SET \"NODE_ENV=production\"",
+    "start-node-server": "npm run build && npm run export-port && node website/server/server.js",
+    "start": "concurrently \"npm run start-game-server\" \"npm run start-node-server\""
   },
   "dependencies": {
     "@babel/core": "^7.5.4",
@@ -21,6 +24,7 @@
     "body-parser": "^1.19.0",
     "bootstrap": "^4.3.1",
     "cloudinary": "^1.14.0",
+    "concurrently": "^4.1.1",
     "core-js": "^3.1.4",
     "express": "^4.16.4",
     "express-form-data": "^2.0.8",

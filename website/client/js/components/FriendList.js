@@ -38,7 +38,7 @@ export default class FriendList extends Component {
             invite(user._id);
             localStorage.setItem('name', this.user.name);
             localStorage.setItem('action', 'create');
-            window.open('http://localhost:3000/facefeka/game/Game.html');
+            window.open(`${base_url}/facefeka/game/Game.html`);
         }
     }
 
@@ -63,7 +63,7 @@ export default class FriendList extends Component {
         const onInvitePopupClosed = () => {
             localStorage.setItem('name', this.user.name);
             localStorage.setItem('action', 'subscribe');
-            window.open('http://localhost:3000/facefeka/game/Game.html');
+            window.open(`${base_url}/facefeka/game/Game.html`);
             this.setState({invitePopUp: false});
         };
 
