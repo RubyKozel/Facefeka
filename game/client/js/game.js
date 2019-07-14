@@ -1,11 +1,11 @@
 const properties = require('../../../website/websiteUtils/properties.json');
-const {base_url, routes} = properties;
+const {base_url, routes, game_url} = properties;
 const canvas = document.getElementById('game');
 const canvasWidth = window.innerWidth;
 const canvasHeight = window.innerHeight;
 const context = canvas.getContext('2d');
 
-const conn = new WebSocket(`wss://${base_url}:${process.env.PHP_PORT}`);
+const conn = new WebSocket(game_url);
 
 let gameInterval = null;
 let lastUpdate = 0;
