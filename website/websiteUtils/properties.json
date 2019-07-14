@@ -1,6 +1,6 @@
 {
   "base_url": "https://facefeka.herokuapp.com",
-  "game_url": "wss://facefeka.herokuapp.com:4000",
+  "game_url": "wss://localhost:4000",
   "routes": {
     "sign_in": "/sign_in",
     "sign_up": "/sign_up",
