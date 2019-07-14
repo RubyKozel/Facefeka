@@ -1,5 +1,4 @@
 /node_modules
 .idea/
 /game/vendor
-/website/server/config/config.json
 /website/client/resources/*.jpg

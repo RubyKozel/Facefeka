@@ -2,24 +2,25 @@
   "test": {
     "PORT": 3000,
     "MONGODB_URI": "mongodb://localhost:27017/FaceFekaTest",
-    "JWT_SECRET": "READ README",
-    "CLOUD_NAME": "READ README",
-    "API_KEY": "READ README",
-    "API_SECRET": "READ README"
+    "JWT_SECRET": "nwifwru23r902n3f2j3id230ofu29b3",
+    "CLOUD_NAME": "facefeka",
+    "API_KEY": "841882232976127",
+    "API_SECRET": "svq3fvJ7G0gilA0-n4loUUcHEhg"
   },
   "development": {
     "PORT": 3000,
     "MONGODB_URI": "mongodb://localhost:27017/FaceFeka",
-    "JWT_SECRET": "READ README",
-    "CLOUD_NAME": "READ README",
-    "API_KEY": "READ README",
-    "API_SECRET": "READ README"
+    "JWT_SECRET": "jjinnf293f238hf30fn23in23",
+    "CLOUD_NAME": "facefeka",
+    "API_KEY": "841882232976127",
+    "API_SECRET": "svq3fvJ7G0gilA0-n4loUUcHEhg"
   },
   "production": {
-    "MONGODB_URI": "READ README",
-    "JWT_SECRET": "READ README",
-    "CLOUD_NAME": "READ README",
-    "API_KEY": "READ README",
-    "API_SECRET": "READ README"
+    "MONGODB_URI": "mongodb+srv://RubyKozel:123852aa@cluster0-m23d4.mongodb.net/test?retryWrites=true&w=majority",
+    "JWT_SECRET": "12u412un4cu21m4212x",
+    "CLOUD_NAME": "facefeka",
+    "API_KEY": "841882232976127",
+    "API_SECRET": "svq3fvJ7G0gilA0-n4loUUcHEhg"
   }
 }
+
