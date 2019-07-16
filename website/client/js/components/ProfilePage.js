@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
 import Header from "./Header";
-import {Col, Container, Jumbotron, Row} from "react-bootstrap";
+import {Col, Container, Jumbotron, Row, Spinner} from "react-bootstrap";
 import GeneralDialog from "./GeneralDialog";
 import ProfileCard from "./ProfileCard";
 import {fetchUser} from "../utils/fetch_user";
 import NewPost from "./NewPost";
 import properties from "../../../websiteUtils/properties.json";
-import Spinner from "react-bootstrap/Spinner";
 import FriendList from "./FriendList";
-import {GET_AUTH, POST_FORM_DATA_AUTH} from '../utils/requests.js';
+import {GET_AUTH} from '../utils/requests.js';
 import Post from "./Post";
+import uploadImage from '../utils/uploadImage.js';
 
 const {base_url, routes} = properties;
 
@@ -64,29 +64,6 @@ export default class ProfilePage extends Component {
         if (callback) callback();
     }
 
-    async uploadImage(e) {
-        const files = Array.from(e.target.files);
-        this.setState({uploading: true});
-
-        const formData = new FormData();
-        formData.append('file', files[0]);
-
-        const response = await POST_FORM_DATA_AUTH(`${base_url}${routes.upload_theme_pic}`, formData);
-
-        let profilePic = null;
-        if (response.status && response.status === 200) {
-            profilePic = (await response.json()).picture;
-        } else {
-            this.setState({error: true});
-            return Promise.reject();
-        }
-
-        this.setState({
-            uploading: false,
-            profilePic
-        });
-    }
-
     render() {
         const spinner = () => this.state.uploading ?
             <Spinner className="profilePageUploadSpinner" animation="border" variant="primary"/> : <></>;
@@ -117,9 +94,14 @@ export default class ProfilePage extends Component {
                         style={{backgroundImage: `url("${this.state.user_profile.theme_pic}")`}} fluid>
                         {spinner()}
                         <input className="noDisplay" id="theme_upload" type="file" alt=""
-                               onChange={(e) => this.uploadImage(e)
-                                   .then(fetchUser)
-                                   .then(user => this.setState({user, user_profile: user}))}/>
+                               onChange={(e) => {
+                                   this.setState({uploading: false},
+                                       uploadImage(e)
+                                           .then((profilePic) => this.setState({uploading: false, profilePic}))
+                                           .catch(() => this.setState({error: true, uploading: false})))
+                                           .then(fetchUser)
+                                           .then(user => this.setState({user, user_profile: user}))
+                               }}/>
                         <Container>
                             <ProfileCard
                                 titleClassName="profileCustomTitle"

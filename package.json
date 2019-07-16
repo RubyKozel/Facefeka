@@ -8,9 +8,12 @@
     "test-watch": "nodemon --exec \"npm test\"",
     "build": "webpack -p --progress --colors --devtool source-map --config webpack.config.js",
     "start-game-server": "php game/server/server.php",
-    "export-port": "export NODE_ENV=production || SET \"NODE_ENV=production\"",
-    "start-node-server": "npm run build && npm run export-port && node website/server/server.js",
-    "start": "concurrently \"npm run start-game-server\" \"npm run start-node-server\""
+    "export-port-production": "export NODE_ENV=production || SET \"NODE_ENV=production\"",
+    "export-port-development": "export NODE_ENV=development || SET \"NODE_ENV=development\"",
+    "start-node-server-production": "npm run build && npm run export-port-production && node website/server/server.js",
+    "start-node-server-development": "npm run build && npm run export-port-development && node website/server/server.js",
+    "start-development": "concurrently \"npm run start-game-server\" \"npm run start-node-server-development\"",
+    "start": "concurrently \"npm run start-game-server\" \"npm run start-node-server-production\""
   },
   "dependencies": {
     "@babel/core": "^7.5.4",
