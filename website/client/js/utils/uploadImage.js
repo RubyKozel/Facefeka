@@ -1,20 +1,20 @@
 import {POST_FORM_DATA_AUTH} from "./requests";
 import properties from "../../../websiteUtils/properties.json";
-const {base_url, routes} = properties;
+const {base_url} = properties;
 
-const uploadImage = async (e) => {
+const uploadImage = async (e, route) => {
     const files = Array.from(e.target.files);
     const formData = new FormData();
     formData.append('file', files[0]);
-    const response = await POST_FORM_DATA_AUTH(`${base_url}${routes.upload_theme_pic}`, formData);
+    const response = await POST_FORM_DATA_AUTH(`${base_url}${route}`, formData);
 
-    let profilePic = null;
+    let picture = null;
     if (response.status && response.status === 200) {
-        profilePic = (await response.json()).picture;
+        picture = (await response.json()).picture;
     } else {
         return Promise.reject();
     }
-    return profilePic;
+    return picture;
 };
 
 export default uploadImage;

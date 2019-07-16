@@ -1149,16 +1149,16 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var conn = new WebSocket('ws://localhost:4000');
-
 var properties = __webpack_require__(99);
 
 var base_url = properties.base_url,
-    routes = properties.routes;
+    routes = properties.routes,
+    game_url = properties.game_url;
 var canvas = document.getElementById('game');
 var canvasWidth = window.innerWidth;
 var canvasHeight = window.innerHeight;
 var context = canvas.getContext('2d');
+var conn = new WebSocket(game_url);
 var gameInterval = null;
 var lastUpdate = 0;
 var deltaTime = 0;
@@ -3635,7 +3635,7 @@ $({ global: true, bind: true, forced: MSIE }, {
 /* 99 */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"base_url\":\"https://facefeka.herokuapp.com\",\"routes\":{\"sign_in\":\"/sign_in\",\"sign_up\":\"/sign_up\",\"sign_in_auth\":\"/sign_in_auth\",\"remove_my_token\":\"/remove_my_token\",\"get_users\":\"/get_users\",\"get_user_by_id\":\"/user/:id\",\"get_all_users\":\"/get_all_users\",\"add_friend_by_id\":\"/add_friend/:id\",\"remove_friend_by_id\":\"/remove_friend/:id\",\"friend_list\":\"/friend_list\",\"new_post\":\"/new_post\",\"get_post_by_id\":\"/post/:id\",\"delete_post_by_id\":\"/post/:id\",\"get_all_posts_by_id\":\"/all_posts/:id\",\"comment_post_by_id\":\"/comment/:id\",\"like_post_by_id\":\"/like/:id\",\"upload_profile_pic\":\"/upload_profile_pic\",\"upload_theme_pic\":\"/upload_theme_pic\",\"upload_images_to_post_by_id\":\"/upload_images/:id\",\"toggle_privacy\":\"/toggle_privacy/:id\",\"add_score_by_id\":\"/add_score\"}}");
+module.exports = JSON.parse("{\"base_url\":\"http://localhost:3000\",\"game_url\":\"ws://localhost:4000\",\"routes\":{\"sign_in\":\"/sign_in\",\"sign_up\":\"/sign_up\",\"sign_in_auth\":\"/sign_in_auth\",\"remove_my_token\":\"/remove_my_token\",\"get_users\":\"/get_users\",\"get_user_by_id\":\"/user/:id\",\"get_all_users\":\"/get_all_users\",\"add_friend_by_id\":\"/add_friend/:id\",\"remove_friend_by_id\":\"/remove_friend/:id\",\"friend_list\":\"/friend_list\",\"new_post\":\"/new_post\",\"get_post_by_id\":\"/post/:id\",\"delete_post_by_id\":\"/post/:id\",\"get_all_posts_by_id\":\"/all_posts/:id\",\"comment_post_by_id\":\"/comment/:id\",\"like_post_by_id\":\"/like/:id\",\"upload_profile_pic\":\"/upload_profile_pic\",\"upload_theme_pic\":\"/upload_theme_pic\",\"upload_images_to_post_by_id\":\"/upload_images/:id\",\"toggle_privacy\":\"/toggle_privacy/:id\",\"add_score_by_id\":\"/add_score\"}}");
 
 /***/ })
 /******/ ]);

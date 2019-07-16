@@ -184,10 +184,14 @@
 }
 
 .profileThemeImage {
-    cursor: pointer;
     display: block;
     height: 250px;
     background-size: cover;
+}
+
+.editThemeButton {
+    margin-left: 3rem;
+    margin-top: 8rem;
 }
 
 /***** HOME CSS ******/

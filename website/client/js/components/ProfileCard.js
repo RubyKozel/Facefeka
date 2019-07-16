@@ -2,10 +2,9 @@ import React, {Component} from 'react';
 import {Button, Card, Spinner} from "react-bootstrap";
 import GeneralDialog from "./GeneralDialog";
 import properties from "../../../websiteUtils/properties.json";
-import {POST_FORM_DATA_AUTH} from '../utils/requests.js';
 import uploadImage from '../utils/uploadImage.js';
 
-const {base_url, routes} = properties;
+const {routes} = properties;
 
 export default class ProfileCard extends Component {
     constructor(props) {
@@ -24,29 +23,6 @@ export default class ProfileCard extends Component {
         }
     }
 
-    async uploadImage(e) {
-        const files = Array.from(e.target.files);
-        this.setState({uploading: true});
-
-        const formData = new FormData();
-        formData.append('file', files[0]);
-
-        const response = await POST_FORM_DATA_AUTH(`${base_url}${routes.upload_profile_pic}`, formData);
-
-        let profilePic = null;
-        if (response.status && response.status === 200) {
-            profilePic = (await response.json()).picture;
-        } else {
-            this.setState({error: true});
-            return Promise.reject();
-        }
-
-        this.setState({
-            uploading: false,
-            profilePic
-        });
-    }
-
     render() {
         return (
             <>
@@ -61,11 +37,13 @@ export default class ProfileCard extends Component {
                                   variant="top"
                                   src={this.state.profilePic}/>}
                     <input className="noDisplay" id="image_upload" type="file" alt=""
-                           onChange={(e) => this.setState({uploading: true},
-                               uploadImage(e)
+                           onChange={e => {
+                               this.setState({uploading: true});
+                               uploadImage(e, routes.upload_profile_pic)
                                    .then(profilePic => this.setState({uploading: false, profilePic}))
                                    .catch(() => this.setState({uploading: false, error: true}))
-                                   .then(this.onPictureUploaded))}/>
+                                   .then(this.onPictureUploaded)
+                           }}/>
                     <Card.Body className={`${this.titleClassName}`}><Card.Title>{this.name}</Card.Title></Card.Body>
                     {this.noFooter ?
                         <></> :

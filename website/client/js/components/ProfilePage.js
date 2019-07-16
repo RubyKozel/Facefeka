@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Header from "./Header";
-import {Col, Container, Jumbotron, Row, Spinner} from "react-bootstrap";
+import {Button, Col, Container, Jumbotron, Row, Spinner} from "react-bootstrap";
 import GeneralDialog from "./GeneralDialog";
 import ProfileCard from "./ProfileCard";
 import {fetchUser} from "../utils/fetch_user";
@@ -22,6 +22,7 @@ export default class ProfilePage extends Component {
             user_profile: props.user_profile,
             currIndex: 0,
             postList: [],
+            themePic: props.user.theme_pic,
             loading: false,
             uploading: false,
             error: false
@@ -89,18 +90,17 @@ export default class ProfilePage extends Component {
                             name={this.state.user.name}
                             friends={this.state.user.friendList}/>
                     <Jumbotron
-                        onClick={this.canChange ? () => $('#theme_upload').click() : null}
                         className="profileThemeImage"
-                        style={{backgroundImage: `url("${this.state.user_profile.theme_pic}")`}} fluid>
+                        style={{backgroundImage: `url("${this.state.themePic}")`}} fluid>
                         {spinner()}
                         <input className="noDisplay" id="theme_upload" type="file" alt=""
-                               onChange={(e) => {
-                                   this.setState({uploading: false},
-                                       uploadImage(e)
-                                           .then((profilePic) => this.setState({uploading: false, profilePic}))
-                                           .catch(() => this.setState({error: true, uploading: false})))
-                                           .then(fetchUser)
-                                           .then(user => this.setState({user, user_profile: user}))
+                               onChange={e => {
+                                   this.setState({uploading: false});
+                                   uploadImage(e, routes.upload_theme_pic)
+                                       .then((themePic) => this.setState({uploading: false, themePic}))
+                                       .catch(() => this.setState({error: true, uploading: false}))
+                                       .then(fetchUser)
+                                       .then(user => this.setState({user, user_profile: user}))
                                }}/>
                         <Container>
                             <ProfileCard
@@ -113,6 +113,14 @@ export default class ProfilePage extends Component {
                                 profilePic={this.state.user_profile.profile_pic}
                                 onPictureUploaded={() => fetchUser().then(user => this.setState({user}))}/>
                         </Container>
+                        {this.canChange ?
+                            <Button className="editThemeButton"
+                                    variant="primary"
+                                    disabled={this.state.uploading}
+                                    size="md"
+                                    onClick={$('#theme_upload').click}>
+                                Edit Theme Picture
+                            </Button> : <></>}
                     </Jumbotron>
                     <Container className="profileCustomContainer">
                         <Row>
