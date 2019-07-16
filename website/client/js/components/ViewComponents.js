@@ -13,9 +13,7 @@ export const Page = (props) => {
     );
 };
 
-export const LeftPane = (props) => {
-    return props.children.map(child => <Row>{child}</Row>)
-};
+export const LeftPane = props => props.children.map(child => <Row>{child}</Row>);
 
 export const PicturesPane = (props) => {
     return props.data && props.data.length > 0 ? (
