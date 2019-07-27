@@ -65,7 +65,7 @@ export default class DropdownInput extends Component {
         };
 
         return this.state.options
-            .filter(user => value === "*" ? true : user.name.toLowerCase().startsWith(value.toLowerCase()))
+            .filter(user => value === "*" ? true : user.name.toLowerCase().includes(value.toLowerCase()))
             .map(user =>
                 <>
                     <DropdownItem>

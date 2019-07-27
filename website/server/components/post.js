@@ -41,7 +41,7 @@ const PostSchema = new mongoose.Schema({
     },
     profile_pic: {
         type: String,
-        default: "../../resources/nopic.png"
+        default: "../../facefeka/resources/nopic.png"
     }
 });
 

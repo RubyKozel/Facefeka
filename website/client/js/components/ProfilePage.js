@@ -22,7 +22,7 @@ export default class ProfilePage extends Component {
             user_profile: props.user_profile,
             currIndex: 0,
             postList: [],
-            themePic: props.user.theme_pic,
+            themePic: props.user_profile.theme_pic,
             loading: false,
             uploading: false,
             error: false
@@ -118,8 +118,7 @@ export default class ProfilePage extends Component {
                                     variant="primary"
                                     disabled={this.state.uploading}
                                     size="md"
-                                    onClick={$('#theme_upload').click}>
-                                Edit Theme Picture
+                                    onClick={() => $('#theme_upload').click()}>Edit Theme Picture
                             </Button> : <></>}
                     </Jumbotron>
                     <Container className="profileCustomContainer">
