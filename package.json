@@ -39,7 +39,7 @@
     "react-bootstrap": "^1.0.0-beta.9",
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",
-    "socket.io": "^2.2.0",
+    "socket.io": "^2.4.0",
     "uglifyjs-webpack-plugin": "^2.1.3",
     "validator": "^11.1.0",
     "webpack": "^4.35.3",
